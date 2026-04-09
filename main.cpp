@@ -1,7 +1,7 @@
-#include <osmium/osm.hpp>
+#include <osmium/io/any_input.hpp>
 #include <iostream>
 
 int main() {
-    std::cout << "libosmium is wired correctly\n";
-    return 0;
+
+  return 0;
 }
