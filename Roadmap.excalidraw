@@ -25,11 +25,16 @@
         "type": 3
       },
       "seed": 411942518,
-      "version": 241,
-      "versionNonce": 1792685966,
+      "version": 242,
+      "versionNonce": 1518310414,
       "isDeleted": false,
-      "boundElements": [],
-      "updated": 1775694237402,
+      "boundElements": [
+        {
+          "id": "OKYn3pjovHY5lNmjU-Jc8",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1775819423548,
       "link": null,
       "locked": false
     },
@@ -619,7 +624,7 @@
       "height": 235,
       "angle": 0,
       "strokeColor": "#1e1e1e",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#ffc9c9",
       "fillStyle": "solid",
       "strokeWidth": 2,
       "strokeStyle": "solid",
@@ -632,8 +637,8 @@
         "type": 3
       },
       "seed": 927993258,
-      "version": 73,
-      "versionNonce": 1771606250,
+      "version": 86,
+      "versionNonce": 343208530,
       "isDeleted": false,
       "boundElements": [
         {
@@ -643,9 +648,13 @@
         {
           "type": "text",
           "id": "iSpqkkqUHMMKM3jVAlJMB"
+        },
+        {
+          "id": "GX3U2YVOkjToTHv_cewU2",
+          "type": "arrow"
         }
       ],
-      "updated": 1775583214518,
+      "updated": 1775819326642,
       "link": null,
       "locked": false
     },
@@ -759,7 +768,7 @@
       "height": 235,
       "angle": 0,
       "strokeColor": "#1e1e1e",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#ffc9c9",
       "fillStyle": "solid",
       "strokeWidth": 2,
       "strokeStyle": "solid",
@@ -772,8 +781,8 @@
         "type": 3
       },
       "seed": 625928362,
-      "version": 18,
-      "versionNonce": 2061944682,
+      "version": 30,
+      "versionNonce": 1294101198,
       "isDeleted": false,
       "boundElements": [
         {
@@ -785,7 +794,7 @@
           "id": "6V5BxXLVfyqW6z7l8KQbC"
         }
       ],
-      "updated": 1775582946221,
+      "updated": 1775819304365,
       "link": null,
       "locked": false
     },
@@ -2910,6 +2919,254 @@
       "fixedSegments": null,
       "startIsSpecial": null,
       "endIsSpecial": null
+    },
+    {
+      "id": "EFU2zIwxp5MN-ANded5KZ",
+      "type": "rectangle",
+      "x": 1060,
+      "y": 980,
+      "width": 520,
+      "height": 235,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 2,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "bEd",
+      "roundness": {
+        "type": 3
+      },
+      "seed": 1445236558,
+      "version": 22,
+      "versionNonce": 1777608850,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "GX3U2YVOkjToTHv_cewU2",
+          "type": "arrow"
+        },
+        {
+          "type": "text",
+          "id": "wn3wpO-WquyzwzH9ELMxm"
+        }
+      ],
+      "updated": 1775819339143,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "wn3wpO-WquyzwzH9ELMxm",
+      "type": "text",
+      "x": 1077.7014923095703,
+      "y": 985,
+      "width": 484.5970153808594,
+      "height": 225,
+      "angle": 0,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "bEdG",
+      "roundness": null,
+      "seed": 331250510,
+      "version": 302,
+      "versionNonce": 750682830,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1775819402406,
+      "link": null,
+      "locked": false,
+      "text": "There's no a read necesity\nfor a DB, since the graph\ncontruction at Phase 2 can\nbe done in place when\nreading the OSM file",
+      "fontSize": 36,
+      "fontFamily": 5,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "EFU2zIwxp5MN-ANded5KZ",
+      "originalText": "There's no a read necesity for a DB, since the graph contruction at Phase 2 can be done in place when reading the OSM file",
+      "autoResize": true,
+      "lineHeight": 1.25
+    },
+    {
+      "id": "nitCuH2SJGWZ8U5eSwhJA",
+      "type": "text",
+      "x": 1312.8358206748962,
+      "y": 1075,
+      "width": 14.32835865020752,
+      "height": 45,
+      "angle": 0,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "#ffc9c9",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "bEdV",
+      "roundness": null,
+      "seed": 694532878,
+      "version": 3,
+      "versionNonce": 1747438546,
+      "isDeleted": true,
+      "boundElements": null,
+      "updated": 1775819335102,
+      "link": null,
+      "locked": false,
+      "text": "",
+      "fontSize": 36,
+      "fontFamily": 5,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "EFU2zIwxp5MN-ANded5KZ",
+      "originalText": "",
+      "autoResize": true,
+      "lineHeight": 1.25
+    },
+    {
+      "id": "GX3U2YVOkjToTHv_cewU2",
+      "type": "arrow",
+      "x": 1006,
+      "y": 837.4,
+      "width": 48,
+      "height": 260.0000000000001,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 2,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "bEe",
+      "roundness": null,
+      "seed": 2007585938,
+      "version": 20,
+      "versionNonce": 1784460178,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1775819329894,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          36,
+          0
+        ],
+        [
+          36,
+          130.10000000000002
+        ],
+        [
+          8,
+          130.10000000000002
+        ],
+        [
+          8,
+          260.0000000000001
+        ],
+        [
+          48,
+          260.0000000000001
+        ]
+      ],
+      "startBinding": {
+        "elementId": "ONrhxkXw7uolXj7-tkvKi",
+        "mode": "orbit",
+        "fixedPoint": [
+          1.0115384615384615,
+          0.4995744680851063
+        ]
+      },
+      "endBinding": {
+        "elementId": "EFU2zIwxp5MN-ANded5KZ",
+        "mode": "orbit",
+        "fixedPoint": [
+          -0.011538461538461539,
+          0.4995744680851063
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": true,
+      "fixedSegments": null,
+      "startIsSpecial": null,
+      "endIsSpecial": null
+    },
+    {
+      "id": "OKYn3pjovHY5lNmjU-Jc8",
+      "type": "arrow",
+      "x": 1010.869873061235,
+      "y": 581.2081763087288,
+      "width": 6.982998209470111,
+      "height": 240.9129611286446,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "bEf",
+      "roundness": {
+        "type": 2
+      },
+      "seed": 1445198158,
+      "version": 62,
+      "versionNonce": 1356929806,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1775819431814,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          6.982998209470111,
+          240.9129611286446
+        ]
+      ],
+      "startBinding": {
+        "elementId": "GM_VLTr7NIsVhc7Zc7uA1",
+        "mode": "inside",
+        "fixedPoint": [
+          0.135869606594252,
+          0.32090005650920794
+        ]
+      },
+      "endBinding": {
+        "elementId": "GM_VLTr7NIsVhc7Zc7uA1",
+        "mode": "inside",
+        "fixedPoint": [
+          0.1368081816224066,
+          0.3981157491786453
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false
     }
   ],
   "appState": {
