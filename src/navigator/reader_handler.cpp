@@ -26,5 +26,5 @@ void Read_handler::way(const osmium::Way &way) {
 }
 
 void Read_handler::node(const osmium::Node &node) {
-  std::cout << "node " << node.id() << '\n';
+  std::cout << "node " << node.id() << node.location().lat() << ' ' << node.location().lon() <<  '\n';
 }
