@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(osmium_app LANGUAGES CXX)
+project(mendotrans_router LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -53,7 +53,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 # ================== RAYLIB CONFIG =========================
 # =========================================================
 
-# These must be set *before* add_subdirectory(raylib)
 set(PLATFORM "Desktop")
 set(API_VERSION 500)
 set(BUILD_SHARED_LIBS ON)
