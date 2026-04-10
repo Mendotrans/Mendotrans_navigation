@@ -1,4 +1,4 @@
-#include "navigator/reader.h"
+#include "navigator/Reader/reader.h"
 #include "osmium/osm/location.hpp"
 #include <iostream>
 #include "raylib.h"
