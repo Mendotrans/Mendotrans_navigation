@@ -12,8 +12,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(${PROJECT_NAME}
     ./src/main.cpp
-    ./src/navigator/reader.cpp
-    ./src/navigator/reader_handler.cpp
+		./src/navigator/Reader/reader.cpp
+		./src/navigator/Reader/reader_handler.cpp
+
+		./src/navigator/Renderer/graph_renderer.cpp
+		./src/navigator/Routing_Graph/routing_graph.cpp
 )
 
 # Headers for libosmium (non‑system)
