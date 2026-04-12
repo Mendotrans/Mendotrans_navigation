@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(mendotrans_router LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
@@ -12,11 +12,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(${PROJECT_NAME}
     ./src/main.cpp
-		./src/navigator/Reader/reader.cpp
 		./src/navigator/Reader/reader_handler.cpp
 
 		./src/navigator/Renderer/graph_renderer.cpp
 		./src/navigator/Routing_Graph/routing_graph.cpp
+
+		./src/navigator/Routing_Graph/graph_builder.cpp
+
 )
 
 # Headers for libosmium (non‑system)

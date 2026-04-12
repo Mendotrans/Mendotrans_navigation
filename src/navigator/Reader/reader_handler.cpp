@@ -10,7 +10,7 @@
 #include <osmium/handler/node_locations_for_ways.hpp>
 #include <osmium/index/map/sparse_mem_array.hpp>
 
-void Read_handler::way(const osmium::Way &way) {
+void ReadHandler::way(const osmium::Way &way) {
   std::cout << "way " << way.id() << '\n';
   for (const osmium::Tag &t : way.tags()) {
     std::cout << '\t' << t.key() << "=" << t.value() << '\n';
@@ -25,6 +25,6 @@ void Read_handler::way(const osmium::Way &way) {
   }
 }
 
-void Read_handler::node(const osmium::Node &node) {
+void ReadHandler::node(const osmium::Node &node) {
   std::cout << "node " << node.id() << node.location().lat() << ' ' << node.location().lon() <<  '\n';
 }
