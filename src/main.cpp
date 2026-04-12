@@ -2,6 +2,7 @@
 #include "navigator/Routing_Graph/graph_builder.h"
 #include "navigator/Routing_Graph/routing_graph.h"
 #include "raylib.h"
+#include <iostream>
 
 int main() {
   Routing_Graph routing_graph;
@@ -9,6 +10,10 @@ int main() {
       osmium::io::File("/home/ironowl/Downloads/map(1).osm"),
       GraphBuilder(&routing_graph));
   reader.apply_reader();
+
+  for (auto a : routing_graph.get_vertexArray()) {
+    std::cout << a << '\n';
+  }
   return 0;
 }
 

@@ -30,6 +30,6 @@ public:
   }
 
 private:
-  Handler m_handler;
   osmium::io::File m_osm_path;
+  Handler m_handler;
 };

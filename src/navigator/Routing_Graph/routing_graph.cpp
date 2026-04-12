@@ -7,6 +7,10 @@ Routing_Graph::Routing_Graph() {
 }
 Routing_Graph::~Routing_Graph() {}
 
+std::vector<graaf::vertex_id_t>& Routing_Graph::get_vertexArray() {
+  return m_vertexArray;
+}
+
 void Routing_Graph::add_vertex(Street_graph_node node) {
-  m_navigaitonGraph.add_vertex(node);
+  m_vertexArray.push_back(m_navigaitonGraph.add_vertex(node));
 }
