@@ -18,6 +18,7 @@ add_executable(${PROJECT_NAME}
 		./src/navigator/Routing_Graph/routing_graph.cpp
 
 		./src/navigator/Routing_Graph/graph_builder.cpp
+		./src/navigator/Renderer/graph_renderer.cpp
 
 )
 
