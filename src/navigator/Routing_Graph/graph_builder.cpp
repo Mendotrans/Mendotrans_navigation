@@ -3,7 +3,7 @@
 #include "graph_nodes.h"
 #include "osmium/osm/node.hpp"
 
-GraphBuilder::GraphBuilder(Routing_Graph *rgraph) : m_routing_graph(rgraph) {}
+GraphBuilder::GraphBuilder(RoutingGraph *rgraph) : m_routing_graph(rgraph) {}
 
 void GraphBuilder::way(const osmium::Way &way) {}
 

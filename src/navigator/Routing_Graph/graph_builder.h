@@ -5,11 +5,11 @@
 
 class GraphBuilder : public osmium::handler::Handler {
 public:
-  GraphBuilder(Routing_Graph *rgraph);
+  GraphBuilder(RoutingGraph *rgraph);
   void way(const osmium::Way &way);
 
   void node(const osmium::Node &node);
 
 private:
-  Routing_Graph *m_routing_graph;
+  RoutingGraph *m_routing_graph;
 };
