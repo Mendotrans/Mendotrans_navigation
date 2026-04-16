@@ -11,11 +11,15 @@ void GraphRenderer::init(int width, int height, const char *title,
                          const int target_fps) {
   InitWindow(width, height, title);
   SetTargetFPS(target_fps);
+
+  m_viewing_point = {default_view_x, default_view_y};
+
   m_camera.target = {default_view_x, default_view_y};
   m_camera.offset = {width / 2.0f, height / 2.0f};
   m_camera.zoom = 1.0f;
   m_camera.rotation = 0.0f;
 }
+
 void GraphRenderer::update() {
   // HACK: This should be a diferent system
   if (IsKeyDown(KEY_RIGHT))
@@ -23,7 +27,7 @@ void GraphRenderer::update() {
   else if (IsKeyDown(KEY_LEFT))
     m_viewing_point.x -= 4;
 
-  m_camera.target = {m_viewing_point.x + 20, m_viewing_point.y + 20};
+  m_camera.target = m_viewing_point;
 
   if (IsKeyDown(KEY_A))
     m_viewing_point.x--;
@@ -44,17 +48,19 @@ void GraphRenderer::update() {
   ClearBackground(RAYWHITE);
 
   BeginMode2D(m_camera);
-  for (Circle a : m_point_list) {
-    std::cout << "Drawing Circle on: " << a.center.x << ' ' << a.center.y << '\n';
+
+  for (const Circle &a : m_point_list) {
+    std::cout << "Drawing Circle on: " << a.center.x << ' ' << a.center.y
+              << '\n';
     DrawCircle(a.center.x, a.center.y, a.radius, a.color);
   }
   EndMode2D();
 
   EndDrawing();
 }
+
 void GraphRenderer::shutdown() { CloseWindow(); }
 
 void GraphRenderer::add_point(int x, int y) {
-  m_point_list.push_back(
-      (Circle){{static_cast<float>(x), static_cast<float>(y)}, 3, RED});
+  m_point_list.push_back(Circle({(float)x, (float)y}, 5, RED));
 }

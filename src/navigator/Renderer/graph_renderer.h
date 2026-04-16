@@ -2,6 +2,7 @@
 
 #include "raylib.h"
 struct Circle {
+	Circle (Vector2 center, float radius, Color color) : center(center), radius(radius), color(color) {}
   Vector2 center;
   float radius;
   Color color;

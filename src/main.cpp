@@ -10,7 +10,7 @@ constexpr uint32_t HEIGH = 1000;
 
 int main() {
   GraphRenderer graph_renderer;
-  graph_renderer.init(WIDTH, HEIGH, "Graph Renderer", 500, 500, 60);
+  graph_renderer.init(WIDTH, HEIGH, "Graph Renderer", 0, 0, 60);
 
   RoutingGraph routing_graph;
   OSMReader<GraphBuilder> reader(
