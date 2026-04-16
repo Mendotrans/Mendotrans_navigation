@@ -49,9 +49,11 @@ void GraphRenderer::update() {
 
   BeginMode2D(m_camera);
 
+  for (const Edge &e : m_edge_list) {
+    DrawLineEx(e.start, e.end, e.thickness, e.color);
+  }
+
   for (const Circle &a : m_point_list) {
-    std::cout << "Drawing Circle on: " << a.center.x << ' ' << a.center.y
-              << '\n';
     DrawCircle(a.center.x, a.center.y, a.radius, a.color);
   }
   EndMode2D();
@@ -61,6 +63,10 @@ void GraphRenderer::update() {
 
 void GraphRenderer::shutdown() { CloseWindow(); }
 
-void GraphRenderer::add_point(int x, int y) {
-  m_point_list.push_back(Circle({(float)x, (float)y}, 5, RED));
+void GraphRenderer::add_point(float x, float y) {
+  m_point_list.push_back({{x, y}, 2.0f, RED});
+}
+
+void GraphRenderer::add_edge(float x1, float y1, float x2, float y2) {
+  m_edge_list.push_back({{x1, y1}, {x2, y2}, DARKGRAY, 1.0f});
 }
