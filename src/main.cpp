@@ -29,7 +29,7 @@ int main() {
       GraphBuilder(&routing_graph));
   reader.apply_reader();
 
-  auto vertices = routing_graph.get_vertexArray();
+  auto vertices = routing_graph.get_vertex_map();
   if (vertices.empty())
     return 0;
 
@@ -45,22 +45,17 @@ int main() {
     graph_renderer.add_point(pos.x, pos.y);
   }
 
-  // 2. Add all relations (Edges)
-  // *NOTE*: The exact method here depends on your 'graaf' routing_graph API.
-  // Replace `get_edges()` and the loop structure with however your library
-  // fetches adjacency/edges.
-  /*
-  for (const auto& edge : routing_graph.get_edges()) {
-      auto nodeA = routing_graph.get_vertex(edge.source_id);
-      auto nodeB = routing_graph.get_vertex(edge.target_id);
+  for (const auto &edge : routing_graph.get_edges()) {
+    auto nodeA = routing_graph.get_vertex_map()[edge.source_id];
+    auto nodeB = routing_graph.get_vertex_map()[edge.target_id];
 
-      Vector2 posA = latLonToWorld(nodeA.Coords.lat(), nodeA.Coords.lon(),
-  ref_lat, ref_lon); Vector2 posB = latLonToWorld(nodeB.Coords.lat(),
-  nodeB.Coords.lon(), ref_lat, ref_lon);
+    Vector2 posA =
+        latLonToWorld(nodeA.Coords.lat(), nodeA.Coords.lon(), ref_lat, ref_lon);
+    Vector2 posB =
+        latLonToWorld(nodeB.Coords.lat(), nodeB.Coords.lon(), ref_lat, ref_lon);
 
-      graph_renderer.add_edge(posA.x, posA.y, posB.x, posB.y);
+    graph_renderer.add_edge(posA.x, posA.y, posB.x, posB.y);
   }
-  */
 
   while (!WindowShouldClose()) {
     graph_renderer.update();
