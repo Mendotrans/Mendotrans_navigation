@@ -1,7 +1,5 @@
 #include "graph_renderer.h"
-#include "raylib.h"
 #include <cmath>
-#include <iostream>
 
 GraphRenderer::GraphRenderer() {}
 GraphRenderer::~GraphRenderer() {}

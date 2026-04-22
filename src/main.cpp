@@ -45,9 +45,9 @@ int main() {
     graph_renderer.add_point(pos.x, pos.y);
   }
 
-  for (const auto &edge : routing_graph.get_edges()) {
-    auto nodeA = routing_graph.get_vertex_map()[edge.source_id];
-    auto nodeB = routing_graph.get_vertex_map()[edge.target_id];
+  for (const auto &[edge_id, weight] : routing_graph.get_edges()) {
+    const auto &nodeA = routing_graph.get_vertex_map().at(edge_id.first);
+    const auto &nodeB = routing_graph.get_vertex_map().at(edge_id.second);
 
     Vector2 posA =
         latLonToWorld(nodeA.Coords.lat(), nodeA.Coords.lon(), ref_lat, ref_lon);

@@ -1,5 +1,7 @@
 #pragma once
+
 #include "raylib.h"
+#undef PI
 #include <vector>
 
 struct Circle {
