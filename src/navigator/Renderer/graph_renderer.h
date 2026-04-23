@@ -33,7 +33,7 @@ public:
 
 private:
   std::vector<Circle> m_point_list;
-  std::vector<Edge> m_edge_list; // Store our relations
+  std::vector<Edge> m_edge_list;
   Camera2D m_camera = {0};
   Vector2 m_viewing_point = {0};
 };

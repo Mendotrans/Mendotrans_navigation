@@ -4,6 +4,7 @@
 #include "navigator/Routing_Graph/routing_graph.h"
 #include "raylib.h"
 #include <cstdint>
+#include <iostream>
 
 constexpr uint32_t WIDTH = 1000;
 constexpr uint32_t HEIGHT = 1000;
@@ -17,19 +18,27 @@ Vector2 latLonToWorld(double lat, double lon, double ref_lat, double ref_lon) {
   return {x, y};
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    std::cerr << "Usage: mendotrans-router <filepath>" << '\n';
+    return 1;
+  }
+  std::string filename = argv[1];
+  std::cout << "Called with path: " << filename << '\n';
+
   GraphRenderer graph_renderer;
   graph_renderer.init(WIDTH, HEIGHT, "Graph Renderer", 0, 0, 60);
 
   RoutingGraph routing_graph;
-  OSMReader<GraphBuilder> reader(
-      osmium::io::File("/home/ironowl/Downloads/map(1).osm"),
-      GraphBuilder(&routing_graph));
+  OSMReader<GraphBuilder> reader(osmium::io::File(filename.c_str()),
+                                 GraphBuilder(&routing_graph));
   reader.apply_reader();
 
   auto vertices = routing_graph.get_vertex_map();
-  if (vertices.empty())
+  if (vertices.empty()) {
+    std::cerr << "Empty Graph!" << '\n';
     return 0;
+  }
 
   double ref_lat = vertices.begin()->second.Coords.lat();
   double ref_lon = vertices.begin()->second.Coords.lon();
