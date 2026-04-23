@@ -4,6 +4,15 @@
 
 constexpr int MOVING_SPEED = 5;
 
+static Rectangle zoom_curl(Camera2D &camera) {
+  // Inside your update() or a helper function
+  float width = GetScreenWidth() / camera.zoom;
+  float height = GetScreenHeight() / camera.zoom;
+
+  return {camera.target.x - (camera.offset.x / camera.zoom),
+          camera.target.y - (camera.offset.y / camera.zoom), width, height};
+}
+
 GraphRenderer::GraphRenderer() {}
 GraphRenderer::~GraphRenderer() {}
 
@@ -35,7 +44,7 @@ void GraphRenderer::update() {
     m_viewing_point.y = m_viewing_point.y + MOVING_SPEED;
 
   m_camera.zoom = expf(logf(m_camera.zoom) + GetMouseWheelMove() * 0.1f);
-  if (m_camera.zoom > 10.0f)
+  if (m_camera.zoom > 100.0f)
     m_camera.zoom = 100.0f;
   else if (m_camera.zoom < 0.001f)
     m_camera.zoom = 0.01f;
@@ -45,12 +54,21 @@ void GraphRenderer::update() {
 
   BeginMode2D(m_camera);
 
+  Rectangle world_view = zoom_curl(m_camera);
+
   for (const Edge &e : m_edge_list) {
-    DrawLineEx(e.start, e.end, e.thickness, e.color);
+    if (CheckCollisionPointRec(e.start, world_view) ||
+        CheckCollisionPointRec(e.end, world_view)) {
+      DrawLineEx(e.start, e.end, e.thickness, e.color);
+    }
   }
 
   for (const Circle &a : m_point_list) {
-    DrawCircle(a.center.x, a.center.y, a.radius, a.color);
+    if (CheckCollisionPointRec(a.center, world_view)) {
+      if (a.radius * m_camera.zoom > 0.5f) {
+        DrawCircle(a.center.x, a.center.y, a.radius, a.color);
+      }
+    }
   }
   EndMode2D();
 
