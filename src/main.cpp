@@ -4,8 +4,6 @@
 #include "navigator/Routing_Graph/routing_graph.h"
 #include "raylib.h"
 #include <cstdint>
-#include <iostream>
-#include <limits>
 
 constexpr uint32_t WIDTH = 1000;
 constexpr uint32_t HEIGHT = 1000;
@@ -36,7 +34,6 @@ int main() {
   double ref_lat = vertices.begin()->second.Coords.lat();
   double ref_lon = vertices.begin()->second.Coords.lon();
 
-  // 1. Add all points (Nodes)
   for (const auto &a : vertices) {
     double lat = a.second.Coords.lat();
     double lon = a.second.Coords.lon();

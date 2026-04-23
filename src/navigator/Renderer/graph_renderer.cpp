@@ -20,11 +20,6 @@ void GraphRenderer::init(int width, int height, const char *title,
 
 void GraphRenderer::update() {
   // HACK: This should be a diferent system
-  if (IsKeyDown(KEY_RIGHT))
-    m_viewing_point.x += 4;
-  else if (IsKeyDown(KEY_LEFT))
-    m_viewing_point.x -= 4;
-
   m_camera.target = m_viewing_point;
 
   if (IsKeyDown(KEY_A))

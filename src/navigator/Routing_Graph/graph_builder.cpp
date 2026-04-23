@@ -1,5 +1,4 @@
 #include "graph_builder.h"
-#include "graph_nodes.h"
 #include "osmium/osm/node.hpp"
 #include "osmium/osm/way.hpp"
 #include <cstring>
