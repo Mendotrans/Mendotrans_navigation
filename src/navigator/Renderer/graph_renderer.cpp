@@ -1,5 +1,8 @@
 #include "graph_renderer.h"
+#include "raylib.h"
 #include <cmath>
+
+constexpr int MOVING_SPEED = 5;
 
 GraphRenderer::GraphRenderer() {}
 GraphRenderer::~GraphRenderer() {}
@@ -23,17 +26,17 @@ void GraphRenderer::update() {
   m_camera.target = m_viewing_point;
 
   if (IsKeyDown(KEY_A))
-    m_viewing_point.x--;
+    m_viewing_point.x = m_viewing_point.x - MOVING_SPEED;
   if (IsKeyDown(KEY_D))
-    m_viewing_point.x++;
+    m_viewing_point.x = m_viewing_point.x + MOVING_SPEED;
   if (IsKeyDown(KEY_W))
-    m_viewing_point.y--;
+    m_viewing_point.y = m_viewing_point.y - MOVING_SPEED;
   if (IsKeyDown(KEY_S))
-    m_viewing_point.y++;
+    m_viewing_point.y = m_viewing_point.y + MOVING_SPEED;
 
   m_camera.zoom = expf(logf(m_camera.zoom) + GetMouseWheelMove() * 0.1f);
   if (m_camera.zoom > 10.0f)
-    m_camera.zoom = 10.0f;
+    m_camera.zoom = 100.0f;
   else if (m_camera.zoom < 0.001f)
     m_camera.zoom = 0.01f;
 

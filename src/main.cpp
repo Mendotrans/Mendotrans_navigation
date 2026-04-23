@@ -6,8 +6,8 @@
 #include <cstdint>
 #include <iostream>
 
-constexpr uint32_t WIDTH = 1000;
-constexpr uint32_t HEIGHT = 1000;
+constexpr uint32_t WIDTH = 1920;
+constexpr uint32_t HEIGHT = 1100;
 
 Vector2 latLonToWorld(double lat, double lon, double ref_lat, double ref_lon) {
   constexpr double SCALE = 100000.0;
