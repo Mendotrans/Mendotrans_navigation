@@ -31,6 +31,8 @@ public:
   void add_point(float x, float y);
   void add_edge(float x1, float y1, float x2, float y2);
 
+  void manage_movement();
+
 private:
   std::vector<Circle> m_point_list;
   std::vector<Edge> m_edge_list;

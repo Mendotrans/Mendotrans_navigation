@@ -31,27 +31,9 @@ void GraphRenderer::init(int width, int height, const char *title,
 }
 
 void GraphRenderer::update() {
-  // HACK: This should be a diferent system
-  m_camera.target = m_viewing_point;
-
-  if (IsKeyDown(KEY_A))
-    m_viewing_point.x = m_viewing_point.x - MOVING_SPEED;
-  if (IsKeyDown(KEY_D))
-    m_viewing_point.x = m_viewing_point.x + MOVING_SPEED;
-  if (IsKeyDown(KEY_W))
-    m_viewing_point.y = m_viewing_point.y - MOVING_SPEED;
-  if (IsKeyDown(KEY_S))
-    m_viewing_point.y = m_viewing_point.y + MOVING_SPEED;
-
-  m_camera.zoom = expf(logf(m_camera.zoom) + GetMouseWheelMove() * 0.1f);
-  if (m_camera.zoom > 100.0f)
-    m_camera.zoom = 100.0f;
-  else if (m_camera.zoom < 0.001f)
-    m_camera.zoom = 0.01f;
-
+  manage_movement();
   BeginDrawing();
   ClearBackground(RAYWHITE);
-
   BeginMode2D(m_camera);
 
   Rectangle world_view = zoom_curl(m_camera);
@@ -70,9 +52,49 @@ void GraphRenderer::update() {
       }
     }
   }
-  EndMode2D();
 
+  EndMode2D();
+  DrawFPS(10, 10);
   EndDrawing();
+}
+
+void GraphRenderer::manage_movement() {
+  float dt = GetFrameTime();
+
+  float currentSpeed = (MOVING_SPEED * 100.0f) / m_camera.zoom;
+
+  if (IsKeyDown(KEY_A))
+    m_viewing_point.x -= currentSpeed * dt;
+  if (IsKeyDown(KEY_D))
+    m_viewing_point.x += currentSpeed * dt;
+  if (IsKeyDown(KEY_W))
+    m_viewing_point.y -= currentSpeed * dt;
+  if (IsKeyDown(KEY_S))
+    m_viewing_point.y += currentSpeed * dt;
+
+  float wheel = GetMouseWheelMove();
+  if (wheel != 0) {
+    Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), m_camera);
+
+    float scaleFactor = 1.0f + (0.15f * fabsf(wheel));
+    if (wheel > 0)
+      m_camera.zoom *= scaleFactor;
+    else
+      m_camera.zoom /= scaleFactor;
+
+    if (m_camera.zoom > 100.0f)
+      m_camera.zoom = 100.0f;
+    if (m_camera.zoom < 0.01f)
+      m_camera.zoom = 0.01f;
+
+    Vector2 mouseWorldPosAfter =
+        GetScreenToWorld2D(GetMousePosition(), m_camera);
+
+    m_viewing_point.x += (mouseWorldPos.x - mouseWorldPosAfter.x);
+    m_viewing_point.y += (mouseWorldPos.y - mouseWorldPosAfter.y);
+  }
+
+  m_camera.target = m_viewing_point;
 }
 
 void GraphRenderer::shutdown() { CloseWindow(); }
