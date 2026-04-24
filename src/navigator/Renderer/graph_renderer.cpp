@@ -1,11 +1,11 @@
 #include "graph_renderer.h"
 #include "raylib.h"
+#include "renderer_info.h"
 #include <cmath>
 
 constexpr int MOVING_SPEED = 5;
 
 static Rectangle zoom_curl(Camera2D &camera) {
-  // Inside your update() or a helper function
   float width = GetScreenWidth() / camera.zoom;
   float height = GetScreenHeight() / camera.zoom;
 
@@ -13,7 +13,8 @@ static Rectangle zoom_curl(Camera2D &camera) {
           camera.target.y - (camera.offset.y / camera.zoom), width, height};
 }
 
-GraphRenderer::GraphRenderer() {}
+GraphRenderer::GraphRenderer(RendererInfo *render_data)
+    : mp_renderer_info(render_data) {}
 GraphRenderer::~GraphRenderer() {}
 
 void GraphRenderer::init(int width, int height, const char *title,
@@ -38,14 +39,14 @@ void GraphRenderer::update() {
 
   Rectangle world_view = zoom_curl(m_camera);
 
-  for (const Edge &e : m_edge_list) {
+  for (const Edge &e : mp_renderer_info->edges) {
     if (CheckCollisionPointRec(e.start, world_view) ||
         CheckCollisionPointRec(e.end, world_view)) {
       DrawLineEx(e.start, e.end, e.thickness, e.color);
     }
   }
 
-  for (const Circle &a : m_point_list) {
+  for (const Circle &a : mp_renderer_info->points) {
     if (CheckCollisionPointRec(a.center, world_view)) {
       if (a.radius * m_camera.zoom > 0.5f) {
         DrawCircle(a.center.x, a.center.y, a.radius, a.color);
@@ -99,10 +100,16 @@ void GraphRenderer::manage_movement() {
 
 void GraphRenderer::shutdown() { CloseWindow(); }
 
-void GraphRenderer::add_point(float x, float y) {
-  m_point_list.push_back({{x, y}, 2.0f, RED});
-}
+void GraphRenderer::begin_render(int width, int height, const char *title,
+                                 const float default_view_x,
+                                 const float default_view_y,
+                                 const int target_fps) {
 
-void GraphRenderer::add_edge(float x1, float y1, float x2, float y2) {
-  m_edge_list.push_back({{x1, y1}, {x2, y2}, DARKGRAY, 1.0f});
+  init(width, height, title, default_view_x, default_view_y, target_fps);
+
+  while (!WindowShouldClose()) {
+    update();
+  }
+
+  shutdown();
 }

@@ -1,5 +1,6 @@
 #include "navigator/Reader/reader.h"
 #include "navigator/Renderer/graph_renderer.h"
+#include "navigator/Renderer/renderer_info.h"
 #include "navigator/Routing_Graph/graph_builder.h"
 #include "navigator/Routing_Graph/routing_graph.h"
 #include "raylib.h"
@@ -26,13 +27,12 @@ int main(int argc, char *argv[]) {
   std::string filename = argv[1];
   std::cout << "Called with path: " << filename << '\n';
 
-  GraphRenderer graph_renderer;
-  graph_renderer.init(WIDTH, HEIGHT, "Graph Renderer", 0, 0, 60);
-
   RoutingGraph routing_graph;
   OSMReader<GraphBuilder> reader(osmium::io::File(filename.c_str()),
                                  GraphBuilder(&routing_graph));
   reader.apply_reader();
+
+  RendererInfo renderer_info;
 
   auto vertices = routing_graph.get_vertex_map();
   if (vertices.empty()) {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     double lon = a.second.Coords.lon();
 
     Vector2 pos = latLonToWorld(lat, lon, ref_lat, ref_lon);
-    graph_renderer.add_point(pos.x, pos.y);
+    renderer_info.add_point(pos.x, pos.y);
   }
 
   for (const auto &[edge_id, weight] : routing_graph.get_edges()) {
@@ -60,13 +60,10 @@ int main(int argc, char *argv[]) {
     Vector2 posB =
         latLonToWorld(nodeB.Coords.lat(), nodeB.Coords.lon(), ref_lat, ref_lon);
 
-    graph_renderer.add_edge(posA.x, posA.y, posB.x, posB.y);
+    renderer_info.add_edge(posA.x, posA.y, posB.x, posB.y);
   }
 
-  while (!WindowShouldClose()) {
-    graph_renderer.update();
-  }
-
-  graph_renderer.shutdown();
+  GraphRenderer graph_renderer(&renderer_info);
+  graph_renderer.begin_render(WIDTH, HEIGHT, "Map Renderer", 0, 0, 60);
   return 0;
 }

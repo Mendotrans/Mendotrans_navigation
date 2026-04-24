@@ -14,11 +14,11 @@ add_executable(${PROJECT_NAME}
     ./src/main.cpp
 		./src/navigator/Reader/reader_handler.cpp
 
-		./src/navigator/Renderer/graph_renderer.cpp
 		./src/navigator/Routing_Graph/routing_graph.cpp
 
 		./src/navigator/Routing_Graph/graph_builder.cpp
 		./src/navigator/Renderer/graph_renderer.cpp
+		./src/navigator/Renderer/renderer_info.cpp
 
 )
 
