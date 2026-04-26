@@ -16,10 +16,10 @@ struct Edge {
   float thickness;
 };
 
-class RendererInfo {
+class RendererData {
 public:
-  RendererInfo() = default;
-  ~RendererInfo() = default;
+  RendererData() = default;
+  ~RendererData() = default;
   void add_point(float x, float y);
   void add_edge(float x1, float y1, float x2, float y2);
 

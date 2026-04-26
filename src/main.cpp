@@ -1,6 +1,6 @@
 #include "navigator/Reader/reader.h"
 #include "navigator/Renderer/graph_renderer.h"
-#include "navigator/Renderer/renderer_info.h"
+#include "navigator/Renderer/renderer_data.h"
 #include "navigator/Routing_Graph/graph_builder.h"
 #include "navigator/Routing_Graph/routing_graph.h"
 #include "raylib.h"
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
                                  GraphBuilder(&routing_graph));
   reader.apply_reader();
 
-  RendererInfo renderer_info;
+  RendererData renderer_data;
 
   auto vertices = routing_graph.get_vertex_map();
   if (vertices.empty()) {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     double lon = a.second.Coords.lon();
 
     Vector2 pos = latLonToWorld(lat, lon, ref_lat, ref_lon);
-    renderer_info.add_point(pos.x, pos.y);
+    renderer_data.add_point(pos.x, pos.y);
   }
 
   for (const auto &[edge_id, weight] : routing_graph.get_edges()) {
@@ -60,10 +60,18 @@ int main(int argc, char *argv[]) {
     Vector2 posB =
         latLonToWorld(nodeB.Coords.lat(), nodeB.Coords.lon(), ref_lat, ref_lon);
 
-    renderer_info.add_edge(posA.x, posA.y, posB.x, posB.y);
+    renderer_data.add_edge(posA.x, posA.y, posB.x, posB.y);
   }
 
-  GraphRenderer graph_renderer(&renderer_info);
-  graph_renderer.begin_render(WIDTH, HEIGHT, "Map Renderer", 0, 0, 60);
+  GraphRendererArgs renderer_args = {.width = WIDTH,
+                                     .height = HEIGHT,
+                                     .title = "Graph Renderer",
+                                     .default_view_x = 0,
+                                     .default_view_y = 0,
+                                     .target_fps = 60};
+  GraphRenderer graph_renderer;
+
+  graph_renderer.init(&renderer_args);
+  graph_renderer.begin_render(&renderer_data);
   return 0;
 }

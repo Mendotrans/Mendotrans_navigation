@@ -1,6 +1,6 @@
 #include "graph_renderer.h"
 #include "raylib.h"
-#include "renderer_info.h"
+#include "renderer_data.h"
 #include <cmath>
 
 constexpr int MOVING_SPEED = 5;
@@ -13,20 +13,17 @@ static Rectangle zoom_curl(Camera2D &camera) {
           camera.target.y - (camera.offset.y / camera.zoom), width, height};
 }
 
-GraphRenderer::GraphRenderer(RendererInfo *render_data)
-    : mp_renderer_info(render_data) {}
+GraphRenderer::GraphRenderer() {}
 GraphRenderer::~GraphRenderer() {}
 
-void GraphRenderer::init(int width, int height, const char *title,
-                         const float default_view_x, const float default_view_y,
-                         const int target_fps) {
-  InitWindow(width, height, title);
-  SetTargetFPS(target_fps);
+void GraphRenderer::init(GraphRendererArgs *args) {
+  InitWindow(args->width, args->height, args->title);
+  SetTargetFPS(args->target_fps);
 
-  m_viewing_point = {default_view_x, default_view_y};
+  m_viewing_point = {args->default_view_x, args->default_view_y};
 
-  m_camera.target = {default_view_x, default_view_y};
-  m_camera.offset = {width / 2.0f, height / 2.0f};
+  m_camera.target = {args->default_view_x, args->default_view_y};
+  m_camera.offset = {args->width / .0f, args->height / 2.0f};
   m_camera.zoom = 1.0f;
   m_camera.rotation = 0.0f;
 }
@@ -39,14 +36,14 @@ void GraphRenderer::update() {
 
   Rectangle world_view = zoom_curl(m_camera);
 
-  for (const Edge &e : mp_renderer_info->edges) {
+  for (const Edge &e : mp_renderer_data->edges) {
     if (CheckCollisionPointRec(e.start, world_view) ||
         CheckCollisionPointRec(e.end, world_view)) {
       DrawLineEx(e.start, e.end, e.thickness, e.color);
     }
   }
 
-  for (const Circle &a : mp_renderer_info->points) {
+  for (const Circle &a : mp_renderer_data->points) {
     if (CheckCollisionPointRec(a.center, world_view)) {
       if (a.radius * m_camera.zoom > 0.5f) {
         DrawCircle(a.center.x, a.center.y, a.radius, a.color);
@@ -100,12 +97,8 @@ void GraphRenderer::manage_movement() {
 
 void GraphRenderer::shutdown() { CloseWindow(); }
 
-void GraphRenderer::begin_render(int width, int height, const char *title,
-                                 const float default_view_x,
-                                 const float default_view_y,
-                                 const int target_fps) {
-
-  init(width, height, title, default_view_x, default_view_y, target_fps);
+void GraphRenderer::begin_render(RendererData *render_data) {
+  mp_renderer_data = render_data;
 
   while (!WindowShouldClose()) {
     update();

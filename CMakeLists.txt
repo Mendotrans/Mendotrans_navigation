@@ -18,7 +18,7 @@ add_executable(${PROJECT_NAME}
 
 		./src/navigator/Routing_Graph/graph_builder.cpp
 		./src/navigator/Renderer/graph_renderer.cpp
-		./src/navigator/Renderer/renderer_info.cpp
+		./src/navigator/Renderer/renderer_data.cpp
 
 )
 
