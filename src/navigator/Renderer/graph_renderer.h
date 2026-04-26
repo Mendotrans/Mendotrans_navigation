@@ -5,12 +5,12 @@
 #undef PI
 
 struct GraphRendererArgs {
-  int width;
-  int height;
-  const char *title;
-  const float default_view_x;
-  const float default_view_y;
-  const int target_fps;
+  int width = 1920;
+  int height = 1080;
+  const char *title = "Graph Renderer";
+  const float default_view_x = 0;
+  const float default_view_y = 0;
+  const int target_fps = 60;
 };
 
 class GraphRenderer {

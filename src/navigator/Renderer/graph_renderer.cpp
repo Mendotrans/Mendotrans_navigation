@@ -23,7 +23,7 @@ void GraphRenderer::init(GraphRendererArgs *args) {
   m_viewing_point = {args->default_view_x, args->default_view_y};
 
   m_camera.target = {args->default_view_x, args->default_view_y};
-  m_camera.offset = {args->width / .0f, args->height / 2.0f};
+  m_camera.offset = {args->width / 2.0f, args->height / 2.0f};
   m_camera.zoom = 1.0f;
   m_camera.rotation = 0.0f;
 }
