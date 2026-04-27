@@ -1,6 +1,8 @@
 #pragma once
 
 #include "raylib.h"
+#include <atomic>
+#include <mutex>
 #include <vector>
 
 struct Circle {
@@ -25,4 +27,7 @@ public:
 
   std::vector<Circle> points;
   std::vector<Edge> edges;
+  std::mutex data_mtx;
+
+  std::atomic<bool> loading_done{false};
 };
