@@ -10,14 +10,17 @@ void RendererData::add_edge(float x1, float y1, float x2, float y2,
                             HighwayType type) {
 
   Color color;
+  float thickness = 1.0f;
   switch (type) {
   case HighwayType::motorway:
   case HighwayType::motorway_link:
     color = RED;
+    thickness = 3.0f;
     break;
   case HighwayType::trunk:
   case HighwayType::trunk_link:
     color = ORANGE;
+    thickness = 3.0f;
     break;
   case HighwayType::primary:
   case HighwayType::primary_link:
@@ -26,6 +29,7 @@ void RendererData::add_edge(float x1, float y1, float x2, float y2,
   case HighwayType::secondary:
   case HighwayType::secondary_link:
     color = YELLOW;
+    thickness = 2.0f;
     break;
   case HighwayType::tertiary:
   case HighwayType::tertiary_link:
@@ -41,5 +45,5 @@ void RendererData::add_edge(float x1, float y1, float x2, float y2,
     break;
   }
   std::lock_guard<std::mutex> lock(data_mtx);
-  edges.push_back({{x1, y1}, {x2, y2}, color, 1.0f});
+  edges.push_back({{x1, y1}, {x2, y2}, color, thickness});
 }
