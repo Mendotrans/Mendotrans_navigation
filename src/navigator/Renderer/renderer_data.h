@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../Routing_Graph/street_edge.h"
+
 #include "raylib.h"
 #include <atomic>
 #include <mutex>
@@ -23,7 +25,7 @@ public:
   RendererData() = default;
   ~RendererData() = default;
   void add_point(float x, float y);
-  void add_edge(float x1, float y1, float x2, float y2);
+  void add_edge(float x1, float y1, float x2, float y2, HighwayType type);
 
   std::vector<Circle> points;
   std::vector<Edge> edges;
