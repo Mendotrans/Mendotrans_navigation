@@ -12,25 +12,32 @@ void RendererData::add_edge(float x1, float y1, float x2, float y2,
   Color color;
   switch (type) {
   case HighwayType::motorway:
+  case HighwayType::motorway_link:
     color = RED;
     break;
   case HighwayType::trunk:
+  case HighwayType::trunk_link:
     color = ORANGE;
     break;
   case HighwayType::primary:
+  case HighwayType::primary_link:
     color = GOLD;
     break;
   case HighwayType::secondary:
+  case HighwayType::secondary_link:
     color = YELLOW;
     break;
   case HighwayType::tertiary:
+  case HighwayType::tertiary_link:
     color = BEIGE;
     break;
   case HighwayType::unclassified:
     color = GRAY;
     break;
   case HighwayType::residential:
+  case HighwayType::residential_link:
     color = BROWN;
+    break;
     break;
   }
   std::lock_guard<std::mutex> lock(data_mtx);

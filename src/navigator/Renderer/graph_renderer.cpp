@@ -31,7 +31,7 @@ void GraphRenderer::init(GraphRendererArgs *args) {
 void GraphRenderer::update() {
   manage_movement();
   BeginDrawing();
-  ClearBackground(RAYWHITE);
+  ClearBackground(Color(0, 0, 0, 1));
   BeginMode2D(m_camera);
 
   Rectangle world_view = zoom_curl(m_camera);

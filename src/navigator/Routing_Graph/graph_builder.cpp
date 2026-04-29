@@ -1,7 +1,6 @@
 #include "graph_builder.h"
 #include "osmium/osm/node.hpp"
 #include "osmium/osm/way.hpp"
-#include "raylib.h"
 #include "street_edge.h"
 #include <cstring>
 
@@ -20,14 +19,24 @@ void GraphBuilder::way(const osmium::Way &way) {
   HighwayType type = HighwayType::unclassified;
   if (strcmp(highway, "motorway") == 0) {
     type = HighwayType::motorway;
+  } else if (strcmp(highway, "motorway_link") == 0) {
+    type = HighwayType::motorway_link;
   } else if (strcmp(highway, "trunk") == 0) {
     type = HighwayType::trunk;
+  } else if (strcmp(highway, "trunk_link") == 0) {
+    type = HighwayType::trunk_link;
   } else if (strcmp(highway, "primary") == 0) {
     type = HighwayType::primary;
+  } else if (strcmp(highway, "primary_link") == 0) {
+    type = HighwayType::primary_link;
   } else if (strcmp(highway, "secondary") == 0) {
     type = HighwayType::secondary;
+  } else if (strcmp(highway, "secondary_link") == 0) {
+    type = HighwayType::secondary_link;
   } else if (strcmp(highway, "tertiary") == 0) {
     type = HighwayType::tertiary;
+  } else if (strcmp(highway, "tertiary_link") == 0) {
+    type = HighwayType::tertiary_link;
   } else if (strcmp(highway, "residential") == 0) {
     type = HighwayType::residential;
   }
