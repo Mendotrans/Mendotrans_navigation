@@ -8,7 +8,7 @@
 #include <iostream>
 
 constexpr uint32_t WIDTH = 1920;
-constexpr uint32_t HEIGHT = 1100;
+constexpr uint32_t HEIGHT = 1200;
 
 Vector2 latLonToWorld(double lat, double lon, double ref_lat, double ref_lon) {
   constexpr double SCALE = 100000.0;
@@ -32,10 +32,12 @@ void LoadOSMData(std::string filename, RoutingGraph *graph,
   double ref_lat = vertices.begin()->second.Coords.lat();
   double ref_lon = vertices.begin()->second.Coords.lon();
 
-  for (const auto &a : vertices) {
-    Vector2 pos = latLonToWorld(a.second.Coords.lat(), a.second.Coords.lon(),
-                                ref_lat, ref_lon);
-    renderer_data->add_point(pos.x, pos.y);
+  if (renderer_data->render_nodes) {
+    for (const auto &a : vertices) {
+      Vector2 pos = latLonToWorld(a.second.Coords.lat(), a.second.Coords.lon(),
+                                  ref_lat, ref_lon);
+      renderer_data->add_point(pos.x, pos.y);
+    }
   }
 
   for (const auto &[edge_id, weight] : graph->get_edges()) {
@@ -52,8 +54,8 @@ void LoadOSMData(std::string filename, RoutingGraph *graph,
 }
 
 int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    std::cerr << "Usage: mendotrans-router <filepath>" << '\n';
+  if (argc < 2) {
+    std::cerr << "Usage: mendotrans-router <filepath> [Options]" << '\n';
     return 1;
   }
   std::string filename = argv[1];
@@ -61,6 +63,17 @@ int main(int argc, char *argv[]) {
 
   RoutingGraph routing_graph;
   RendererData renderer_data;
+
+  for (int i = 2; i < argc; ++i) {
+    std::string option = argv[i];
+    if (option == "-no-render-nodes") {
+      renderer_data.render_nodes = false;
+      continue;
+    }
+
+    std::cout << "Invalid option: " << argv[i] << '\n';
+    return 1;
+  }
 
   std::thread loader_thread([&]() {
     LoadOSMData(filename, &routing_graph, &renderer_data);
