@@ -1,6 +1,7 @@
 #include "graph_builder.h"
 #include "osmium/osm/node.hpp"
 #include "osmium/osm/way.hpp"
+#include "street_edge.h"
 #include <cstring>
 
 GraphBuilder::GraphBuilder(RoutingGraph *rgraph) : m_routing_graph(rgraph) {}
@@ -13,6 +14,31 @@ void GraphBuilder::way(const osmium::Way &way) {
   const char *highway = way.tags().get_value_by_key("highway");
   if (!highway) {
     return; // Not a road, skip it.
+  }
+
+  HighwayType type = HighwayType::unclassified;
+  if (strcmp(highway, "motorway") == 0) {
+    type = HighwayType::motorway;
+  } else if (strcmp(highway, "motorway_link") == 0) {
+    type = HighwayType::motorway_link;
+  } else if (strcmp(highway, "trunk") == 0) {
+    type = HighwayType::trunk;
+  } else if (strcmp(highway, "trunk_link") == 0) {
+    type = HighwayType::trunk_link;
+  } else if (strcmp(highway, "primary") == 0) {
+    type = HighwayType::primary;
+  } else if (strcmp(highway, "primary_link") == 0) {
+    type = HighwayType::primary_link;
+  } else if (strcmp(highway, "secondary") == 0) {
+    type = HighwayType::secondary;
+  } else if (strcmp(highway, "secondary_link") == 0) {
+    type = HighwayType::secondary_link;
+  } else if (strcmp(highway, "tertiary") == 0) {
+    type = HighwayType::tertiary;
+  } else if (strcmp(highway, "tertiary_link") == 0) {
+    type = HighwayType::tertiary_link;
+  } else if (strcmp(highway, "residential") == 0) {
+    type = HighwayType::residential;
   }
 
   bool is_oneway = false;
@@ -41,11 +67,11 @@ void GraphBuilder::way(const osmium::Way &way) {
     }
 
     // Add the forward edge (n1 -> n2)
-    m_routing_graph->add_edge(n1.ref(), n2.ref(), distance);
+    m_routing_graph->add_edge(n1.ref(), n2.ref(), distance, type);
 
     // If it's NOT a one-way street, add the reverse edge (n2 -> n1)
     if (!is_oneway) {
-      m_routing_graph->add_edge(n2.ref(), n1.ref(), distance);
+      m_routing_graph->add_edge(n2.ref(), n1.ref(), distance, type);
     }
   }
 }

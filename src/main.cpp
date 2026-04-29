@@ -40,7 +40,7 @@ void LoadOSMData(std::string filename, RoutingGraph *graph,
     }
   }
 
-  for (const auto &[edge_id, weight] : graph->get_edges()) {
+  for (const auto &[edge_id, edge] : graph->get_edges()) {
     const auto &nodeA = graph->get_vertex_map().at(edge_id.first);
     const auto &nodeB = graph->get_vertex_map().at(edge_id.second);
 
@@ -49,7 +49,7 @@ void LoadOSMData(std::string filename, RoutingGraph *graph,
     Vector2 posB =
         latLonToWorld(nodeB.Coords.lat(), nodeB.Coords.lon(), ref_lat, ref_lon);
 
-    renderer_data->add_edge(posA.x, posA.y, posB.x, posB.y);
+    renderer_data->add_edge(posA.x, posA.y, posB.x, posB.y, edge.type);
   }
 }
 

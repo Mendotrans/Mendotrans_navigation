@@ -2,6 +2,7 @@
 
 #include "osmium/handler.hpp"
 #include "routing_graph.h"
+#undef PI
 #include <osmium/geom/haversine.hpp>
 
 class GraphBuilder : public osmium::handler::Handler {
