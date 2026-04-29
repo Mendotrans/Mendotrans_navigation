@@ -36,23 +36,32 @@ void GraphRenderer::update() {
 
   Rectangle world_view = zoom_curl(m_camera);
 
-  for (const Edge &e : mp_renderer_data->edges) {
-    if (CheckCollisionPointRec(e.start, world_view) ||
-        CheckCollisionPointRec(e.end, world_view)) {
-      DrawLineEx(e.start, e.end, e.thickness, e.color);
+  {
+    std::lock_guard<std::mutex> lock(mp_renderer_data->data_mtx);
+    for (const Edge &e : mp_renderer_data->edges) {
+      if (CheckCollisionPointRec(e.start, world_view) ||
+          CheckCollisionPointRec(e.end, world_view)) {
+        DrawLineEx(e.start, e.end, e.thickness, e.color);
+      }
     }
-  }
 
-  for (const Circle &a : mp_renderer_data->points) {
-    if (CheckCollisionPointRec(a.center, world_view)) {
-      if (a.radius * m_camera.zoom > 0.5f) {
-        DrawCircle(a.center.x, a.center.y, a.radius, a.color);
+    for (const Circle &a : mp_renderer_data->points) {
+      if (CheckCollisionPointRec(a.center, world_view)) {
+        if (a.radius * m_camera.zoom > 0.5f) {
+          DrawCircle(a.center.x, a.center.y, a.radius, a.color);
+        }
       }
     }
   }
 
   EndMode2D();
   DrawFPS(10, 10);
+
+  if (!mp_renderer_data->loading_done) {
+    constexpr const char *label = "Loading OSM Data...";
+    DrawText(label, GetScreenWidth() - MeasureText(label, 20) - 10, 10, 20,
+             DARKGRAY);
+  }
   EndDrawing();
 }
 

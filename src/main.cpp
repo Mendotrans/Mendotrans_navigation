@@ -8,7 +8,7 @@
 #include <iostream>
 
 constexpr uint32_t WIDTH = 1920;
-constexpr uint32_t HEIGHT = 1100;
+constexpr uint32_t HEIGHT = 1200;
 
 Vector2 latLonToWorld(double lat, double lon, double ref_lat, double ref_lon) {
   constexpr double SCALE = 100000.0;
@@ -19,49 +19,67 @@ Vector2 latLonToWorld(double lat, double lon, double ref_lat, double ref_lon) {
   return {x, y};
 }
 
-int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    std::cerr << "Usage: mendotrans-router <filepath>" << '\n';
-    return 1;
-  }
-  std::string filename = argv[1];
-  std::cout << "Called with path: " << filename << '\n';
-
-  RoutingGraph routing_graph;
+void LoadOSMData(std::string filename, RoutingGraph *graph,
+                 RendererData *renderer_data) {
   OSMReader<GraphBuilder> reader(osmium::io::File(filename.c_str()),
-                                 GraphBuilder(&routing_graph));
+                                 GraphBuilder(graph));
   reader.apply_reader();
 
-  RendererData renderer_data;
-
-  auto vertices = routing_graph.get_vertex_map();
-  if (vertices.empty()) {
-    std::cerr << "Empty Graph!" << '\n';
-    return 0;
-  }
+  auto vertices = graph->get_vertex_map();
+  if (vertices.empty())
+    return;
 
   double ref_lat = vertices.begin()->second.Coords.lat();
   double ref_lon = vertices.begin()->second.Coords.lon();
 
-  for (const auto &a : vertices) {
-    double lat = a.second.Coords.lat();
-    double lon = a.second.Coords.lon();
-
-    Vector2 pos = latLonToWorld(lat, lon, ref_lat, ref_lon);
-    renderer_data.add_point(pos.x, pos.y);
+  if (renderer_data->render_nodes) {
+    for (const auto &a : vertices) {
+      Vector2 pos = latLonToWorld(a.second.Coords.lat(), a.second.Coords.lon(),
+                                  ref_lat, ref_lon);
+      renderer_data->add_point(pos.x, pos.y);
+    }
   }
 
-  for (const auto &[edge_id, weight] : routing_graph.get_edges()) {
-    const auto &nodeA = routing_graph.get_vertex_map().at(edge_id.first);
-    const auto &nodeB = routing_graph.get_vertex_map().at(edge_id.second);
+  for (const auto &[edge_id, weight] : graph->get_edges()) {
+    const auto &nodeA = graph->get_vertex_map().at(edge_id.first);
+    const auto &nodeB = graph->get_vertex_map().at(edge_id.second);
 
     Vector2 posA =
         latLonToWorld(nodeA.Coords.lat(), nodeA.Coords.lon(), ref_lat, ref_lon);
     Vector2 posB =
         latLonToWorld(nodeB.Coords.lat(), nodeB.Coords.lon(), ref_lat, ref_lon);
 
-    renderer_data.add_edge(posA.x, posA.y, posB.x, posB.y);
+    renderer_data->add_edge(posA.x, posA.y, posB.x, posB.y);
   }
+}
+
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    std::cerr << "Usage: mendotrans-router <filepath> [Options]" << '\n';
+    return 1;
+  }
+  std::string filename = argv[1];
+  std::cout << "Called with path: " << filename << '\n';
+
+  RoutingGraph routing_graph;
+  RendererData renderer_data;
+
+  for (int i = 2; i < argc; ++i) {
+    std::string option = argv[i];
+    if (option == "-no-render-nodes") {
+      renderer_data.render_nodes = false;
+      continue;
+    }
+
+    std::cout << "Invalid option: " << argv[i] << '\n';
+    return 1;
+  }
+
+  std::thread loader_thread([&]() {
+    LoadOSMData(filename, &routing_graph, &renderer_data);
+    renderer_data.loading_done = true;
+  });
+  loader_thread.detach();
 
   GraphRendererArgs renderer_args = {.width = WIDTH,
                                      .height = HEIGHT,
