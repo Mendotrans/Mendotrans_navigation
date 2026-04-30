@@ -4,7 +4,7 @@
 Rendering using raylib, graphs with graaf and OSM (open street map) file parsing with osmium.
 
 The map loading and rendering MVP is finished. Now we are going to jump into the loading of the Mendoza's
-public transport system routes. For this the milestone `Adding Public Transport` has beeng created.
+public transport system routes. For this the milestone `Adding Public Transport` has been created.
 # Examples
 
 <img width="1920" height="1200" alt="image" src="https://github.com/user-attachments/assets/b3c98365-f53a-4706-b4d0-3c22c0932a9b" />
