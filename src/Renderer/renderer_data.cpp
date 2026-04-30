@@ -1,5 +1,4 @@
 #include "renderer_data.h"
-#include "../Routing_Graph/street_edge.h"
 #include "raylib.h"
 
 void RendererData::add_point(float x, float y) {

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../Routing_Graph/street_edge.h"
-
+#include "RoutingGraph/street_edge.h"
 #include "raylib.h"
 #include <atomic>
 #include <mutex>
