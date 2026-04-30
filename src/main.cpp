@@ -1,8 +1,8 @@
-#include "navigator/Reader/reader.h"
-#include "navigator/Renderer/graph_renderer.h"
-#include "navigator/Renderer/renderer_data.h"
-#include "navigator/Routing_Graph/graph_builder.h"
-#include "navigator/Routing_Graph/routing_graph.h"
+#include "Reader/reader.h"
+#include "Renderer/graph_renderer.h"
+#include "Renderer/renderer_data.h"
+#include "RoutingGraph/graph_builder.h"
+#include "RoutingGraph/routing_graph.h"
 #include "raylib.h"
 #include <cstdint>
 #include <iostream>
