@@ -45,5 +45,6 @@ void RendererData::add_edge(float x1, float y1, float x2, float y2,
     break;
   }
   std::lock_guard<std::mutex> lock(data_mtx);
-  edges.push_back({{x1, y1}, {x2, y2}, color, thickness});
+  edges.push_back(
+      {{x1, y1}, {x2, y2}, highway_colors ? color : GRAY, thickness});
 }

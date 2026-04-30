@@ -32,5 +32,6 @@ public:
   std::mutex data_mtx;
 
   std::atomic<bool> loading_done{false};
-  bool render_nodes = true;
+  bool render_nodes = false;
+  bool highway_colors = false;
 };
