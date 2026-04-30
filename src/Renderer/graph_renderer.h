@@ -4,6 +4,8 @@
 #include "renderer_data.h"
 #undef PI
 
+Vector2 latLonToWorld(double lat, double lon, double ref_lat, double ref_lon);
+
 struct GraphRendererArgs {
   int width = 1920;
   int height = 1080;
