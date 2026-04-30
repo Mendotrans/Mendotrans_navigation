@@ -55,7 +55,9 @@ void LoadOSMData(std::string filename, RoutingGraph *graph,
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
-    std::cerr << "Usage: mendotrans-router <filepath> [Options]" << '\n';
+    std::cerr << "Usage: mendotrans-router <filepath> [Options]\n"
+              << "Options:\n"
+              << "-render-nodes\t Show OSM nodes\n";
     return 1;
   }
   std::string filename = argv[1];
@@ -66,8 +68,8 @@ int main(int argc, char *argv[]) {
 
   for (int i = 2; i < argc; ++i) {
     std::string option = argv[i];
-    if (option == "-no-render-nodes") {
-      renderer_data.render_nodes = false;
+    if (option == "-render-nodes") {
+      renderer_data.render_nodes = true;
       continue;
     }
 
