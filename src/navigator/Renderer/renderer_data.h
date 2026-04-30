@@ -33,4 +33,5 @@ public:
 
   std::atomic<bool> loading_done{false};
   bool render_nodes = false;
+  bool highway_colors = false;
 };
