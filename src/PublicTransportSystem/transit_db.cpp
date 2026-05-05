@@ -32,6 +32,13 @@ inline void TransitDatabase::exec(const char *sql) const {
   }
 }
 
+inline void TransitDatabase::clear_data() {
+  exec("DELETE FROM Stops;");
+  exec("DELETE FROM Services;");
+  exec("DELETE FROM Groups;");
+  exec("DELETE FROM ServiceDetails;");
+}
+
 inline TransitDatabase::Stmt
 TransitDatabase::prepare(const std::string &sql) const {
   Stmt s;

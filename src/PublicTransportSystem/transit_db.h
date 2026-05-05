@@ -27,6 +27,9 @@ public:
   // Returns true if the Stops table already has rows.
   bool is_populated() const;
 
+  // Clears the Stops, Services, Groups an ServiceDetails tables
+  void clear_data();
+
   // Bulk insert helpers called during the initial static data load.
   void insert_stops(const std::vector<Stop> &stops);
   void insert_services(const std::vector<Service> &services);

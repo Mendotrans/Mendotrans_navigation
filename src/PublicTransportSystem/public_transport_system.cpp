@@ -140,10 +140,7 @@ inline void PublicTransportSystem::init_static_data() {
 }
 
 inline void PublicTransportSystem::force_reinit() {
-  db_.exec("DELETE FROM Stops;");
-  db_.exec("DELETE FROM Services;");
-  db_.exec("DELETE FROM Groups;");
-  db_.exec("DELETE FROM ServiceDetails;");
+  db_.clear_data();
   init_static_data();
 }
 
