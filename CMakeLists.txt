@@ -20,6 +20,9 @@ add_executable(${PROJECT_NAME}
 		./src/Renderer/graph_renderer.cpp
 		./src/Renderer/renderer_data.cpp
 
+    ./src/PublicTransportSystem/public_transport_system.cpp
+    ./src/PublicTransportSystem/transit_db.cpp
+
 )
 target_include_directories(${PROJECT_NAME}
     PRIVATE
@@ -60,6 +63,25 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 
 # =========================================================
+# ================== JSON CONFIG ==========================
+# =========================================================
+
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+
+add_subdirectory(vendor/nlohmann_json)
+
+target_link_libraries(${PROJECT_NAME}
+  PRIVATE 
+  nlohmann_json::nlohmann_json
+)
+
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+    vendor/nlohmann_json/include/
+  )
+
+
+# =========================================================
 # ================== RAYLIB CONFIG =========================
 # =========================================================
 
@@ -85,6 +107,14 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ./vendor/graaf/include/)
+
+
+# =========================================================
+# ================== HTTPLIB CONFIG ==========================
+# =========================================================
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ./vendor/cpp-httplib/)
 
 
 # =========================================================
