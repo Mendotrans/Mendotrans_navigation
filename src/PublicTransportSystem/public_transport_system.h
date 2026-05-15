@@ -55,12 +55,12 @@ public:
       bool force = false);
 
   // Direct access to the underlying database.
-  TransitDatabase &db() { return db_; }
-  const TransitDatabase &db() const { return db_; }
+  TransitDatabase &db() { return m_db; }
+  const TransitDatabase &db() const { return m_db; }
 
 private:
-  ApiConfig cfg_;
-  TransitDatabase db_;
+  ApiConfig m_cfg;
+  TransitDatabase m_db;
 
   // Returns a configured HTTPS or HTTP client for the base URL.
   std::unique_ptr<httplib::Client> make_client() const;

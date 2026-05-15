@@ -4,14 +4,14 @@ namespace mendotran {
 
 inline PublicTransportSystem::PublicTransportSystem(const std::string &db_path,
                                                     const ApiConfig &cfg)
-    : cfg_(cfg), db_(db_path) {
-  db_.init_schema();
+    : m_cfg(cfg), m_db(db_path) {
+  m_db.init_schema();
 }
 
 inline std::unique_ptr<httplib::Client>
 PublicTransportSystem::make_client() const {
   auto client = std::make_unique<httplib::Client>(
-      (cfg_.use_https ? "https://" : "http://") + cfg_.base_url);
+      (m_cfg.use_https ? "https://" : "http://") + m_cfg.base_url);
   client->set_connection_timeout(10);
   client->set_read_timeout(10);
   return client;
@@ -20,14 +20,14 @@ PublicTransportSystem::make_client() const {
 inline nlohmann::json
 PublicTransportSystem::post(const std::string &endpoint,
                             const nlohmann::json &body) const {
-  const std::string path = cfg_.base_path + "/" + endpoint;
+  const std::string path = m_cfg.base_path + "/" + endpoint;
   const std::string body_str = body.dump();
 
   httplib::Headers headers = {
       {"Accept", "*/*"},
       {"Accept-Language", "es-AR,es;q=0.8,en-US;q=0.5,en;q=0.3"},
-      {"Origin", (cfg_.use_https ? "https://" : "http://") + cfg_.base_url},
-      {"Referer", (cfg_.use_https ? "https://" : "http://") + cfg_.base_url +
+      {"Origin", (m_cfg.use_https ? "https://" : "http://") + m_cfg.base_url},
+      {"Referer", (m_cfg.use_https ? "https://" : "http://") + m_cfg.base_url +
                       "/web/mendoza/"},
       {"User-Agent", "cpp-httplib/transit-client"},
   };
@@ -46,9 +46,9 @@ PublicTransportSystem::post(const std::string &endpoint,
 
 inline nlohmann::json PublicTransportSystem::api_fetch_stops() const {
   return post("search", {
-                            {"token", cfg_.token},
+                            {"token", m_cfg.token},
                             {"text", ""},
-                            {"xss", cfg_.xss_search},
+                            {"xss", m_cfg.xss_search},
                             {"search", {"stops"}},
                             {"no_favorites", true},
                         });
@@ -56,9 +56,9 @@ inline nlohmann::json PublicTransportSystem::api_fetch_stops() const {
 
 inline nlohmann::json PublicTransportSystem::api_fetch_services_list() const {
   return post("search", {
-                            {"token", cfg_.token},
+                            {"token", m_cfg.token},
                             {"text", ""},
-                            {"xss", cfg_.xss_search},
+                            {"xss", m_cfg.xss_search},
                             {"search", {"services"}},
                             {"no_favorites", true},
                         });
@@ -67,21 +67,21 @@ inline nlohmann::json PublicTransportSystem::api_fetch_services_list() const {
 inline nlohmann::json
 PublicTransportSystem::api_fetch_stop_arrivals(int stop_id) const {
   return post("arrivals", {
-                              {"token", cfg_.token},
+                              {"token", m_cfg.token},
                               {"stop_id", stop_id},
                               {"first_time", false},
-                              {"xss", cfg_.xss_arrivals},
+                              {"xss", m_cfg.xss_arrivals},
                           });
 }
 
 inline nlohmann::json
 PublicTransportSystem::api_fetch_service_detail(int service_id) const {
   return post("service", {
-                             {"token", cfg_.token},
+                             {"token", m_cfg.token},
                              {"service_id", service_id},
                              {"encode_polyline", true},
                              {"vehicles", true},
-                             {"xss", cfg_.xss_service},
+                             {"xss", m_cfg.xss_service},
                          });
 }
 
@@ -127,36 +127,36 @@ PublicTransportSystem::parse_groups(const nlohmann::json &raw) {
 }
 
 inline void PublicTransportSystem::init_static_data() {
-  if (db_.is_populated())
+  if (m_db.is_populated())
     throw std::runtime_error(
         "DB already populated. Use force_reinit() to overwrite.");
 
   auto stops_raw = api_fetch_stops();
   auto services_raw = api_fetch_services_list();
 
-  db_.insert_stops(parse_stops(stops_raw));
-  db_.insert_services(parse_services(services_raw));
-  db_.insert_groups(parse_groups(services_raw));
+  m_db.insert_stops(parse_stops(stops_raw));
+  m_db.insert_services(parse_services(services_raw));
+  m_db.insert_groups(parse_groups(services_raw));
 }
 
 inline void PublicTransportSystem::force_reinit() {
-  db_.clear_data();
+  m_db.clear_data();
   init_static_data();
 }
 
 inline std::vector<Stop>
 PublicTransportSystem::search_stops(const std::string &query, int limit) const {
-  return db_.search_stops(query, limit);
+  return m_db.search_stops(query, limit);
 }
 
 inline std::vector<Service>
 PublicTransportSystem::search_services(const std::string &query,
                                        int limit) const {
-  return db_.search_services(query, limit);
+  return m_db.search_services(query, limit);
 }
 
 inline std::vector<int> PublicTransportSystem::all_service_ids() const {
-  return db_.all_service_ids();
+  return m_db.all_service_ids();
 }
 
 inline nlohmann::json PublicTransportSystem::fetch_arrivals(int stop_id) const {
@@ -166,22 +166,22 @@ inline nlohmann::json PublicTransportSystem::fetch_arrivals(int stop_id) const {
 inline nlohmann::json
 PublicTransportSystem::fetch_service_detail(int service_id, bool use_cache) {
   if (use_cache) {
-    auto cached = db_.get_service_detail(service_id);
+    auto cached = m_db.get_service_detail(service_id);
     if (cached)
       return *cached;
   }
   auto data = api_fetch_service_detail(service_id);
-  db_.upsert_service_detail(service_id, data);
+  m_db.upsert_service_detail(service_id, data);
   return data;
 }
 
 inline void PublicTransportSystem::fetch_all_service_details(
     std::chrono::milliseconds delay, bool force) {
-  for (int sid : db_.all_service_ids()) {
-    if (!force && db_.get_service_detail(sid))
+  for (int sid : m_db.all_service_ids()) {
+    if (!force && m_db.get_service_detail(sid))
       continue;
     auto data = api_fetch_service_detail(sid);
-    db_.upsert_service_detail(sid, data);
+    m_db.upsert_service_detail(sid, data);
     std::this_thread::sleep_for(delay);
   }
 }
