@@ -116,6 +116,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_include_directories(${PROJECT_NAME} PRIVATE
     ./vendor/cpp-httplib/)
 
+find_package(OpenSSL REQUIRED)
+target_link_libraries(mendotrans_router PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+
 
 # =========================================================
 # ================== COMPILER FLAGS ========================
