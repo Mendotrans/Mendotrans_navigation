@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Renderer/renderer_data.h"
 #include "graaflib/graph.h"
 #include "osmium/osm/types.hpp"
 #include "street_edge.h"
@@ -28,3 +29,6 @@ private:
   std::unordered_map<osmium::object_id_type, graaf::vertex_id_t>
       m_osm_to_graaf_id;
 };
+
+void LoadOSMData(std::string filename, RoutingGraph *graph,
+                 RendererData *renderer_data);

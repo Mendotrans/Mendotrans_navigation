@@ -1,57 +1,11 @@
-#include "Reader/reader.h"
 #include "Renderer/graph_renderer.h"
-#include "Renderer/renderer_data.h"
-#include "RoutingGraph/graph_builder.h"
 #include "RoutingGraph/routing_graph.h"
-#include "raylib.h"
 #include <cstdint>
 #include <iostream>
+#include <thread>
 
 constexpr uint32_t WIDTH = 1920;
 constexpr uint32_t HEIGHT = 1200;
-
-Vector2 latLonToWorld(double lat, double lon, double ref_lat, double ref_lon) {
-  constexpr double SCALE = 100000.0;
-
-  float x = static_cast<float>((lon - ref_lon) * SCALE);
-  float y = static_cast<float>(-(lat - ref_lat) * SCALE);
-
-  return {x, y};
-}
-
-void LoadOSMData(std::string filename, RoutingGraph *graph,
-                 RendererData *renderer_data) {
-  OSMReader<GraphBuilder> reader(osmium::io::File(filename.c_str()),
-                                 GraphBuilder(graph));
-  reader.apply_reader();
-
-  auto vertices = graph->get_vertex_map();
-  if (vertices.empty())
-    return;
-
-  double ref_lat = vertices.begin()->second.Coords.lat();
-  double ref_lon = vertices.begin()->second.Coords.lon();
-
-  if (renderer_data->render_nodes) {
-    for (const auto &a : vertices) {
-      Vector2 pos = latLonToWorld(a.second.Coords.lat(), a.second.Coords.lon(),
-                                  ref_lat, ref_lon);
-      renderer_data->add_point(pos.x, pos.y);
-    }
-  }
-
-  for (const auto &[edge_id, edge] : graph->get_edges()) {
-    const auto &nodeA = graph->get_vertex_map().at(edge_id.first);
-    const auto &nodeB = graph->get_vertex_map().at(edge_id.second);
-
-    Vector2 posA =
-        latLonToWorld(nodeA.Coords.lat(), nodeA.Coords.lon(), ref_lat, ref_lon);
-    Vector2 posB =
-        latLonToWorld(nodeB.Coords.lat(), nodeB.Coords.lon(), ref_lat, ref_lon);
-
-    renderer_data->add_edge(posA.x, posA.y, posB.x, posB.y, edge.type);
-  }
-}
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {

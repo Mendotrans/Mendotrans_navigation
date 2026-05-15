@@ -115,3 +115,12 @@ void GraphRenderer::begin_render(RendererData *render_data) {
 
   shutdown();
 }
+
+Vector2 latLonToWorld(double lat, double lon, double ref_lat, double ref_lon) {
+  constexpr double SCALE = 100000.0;
+
+  float x = static_cast<float>((lon - ref_lon) * SCALE);
+  float y = static_cast<float>(-(lat - ref_lat) * SCALE);
+
+  return {x, y};
+}

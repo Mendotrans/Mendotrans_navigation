@@ -7,3 +7,9 @@
 [submodule "vendor/graaf"]
 	path = vendor/graaf
 	url = https://github.com/bobluppes/graaf.git
+[submodule "vendor/cpp-httplib"]
+	path = vendor/cpp-httplib
+	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "vendor/nlohmann_json"]
+	path = vendor/nlohmann_json
+	url = https://github.com/nlohmann/json.git
