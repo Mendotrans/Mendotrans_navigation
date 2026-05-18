@@ -3,7 +3,7 @@
 
 namespace mendotran {
 
-inline TransitDatabase::TransitDatabase(const std::string &db_path) {
+TransitDatabase::TransitDatabase(const std::string &db_path) {
   int rc = sqlite3_open(db_path.c_str(), &db_);
   if (rc != SQLITE_OK)
     throw std::runtime_error(std::string("sqlite3_open: ") +
@@ -12,17 +12,17 @@ inline TransitDatabase::TransitDatabase(const std::string &db_path) {
   exec("PRAGMA foreign_keys=ON;");
 }
 
-inline TransitDatabase::~TransitDatabase() {
+TransitDatabase::~TransitDatabase() {
   if (db_)
     sqlite3_close(db_);
 }
 
-inline void TransitDatabase::check(int rc, const char *context) const {
+void TransitDatabase::check(int rc, const char *context) const {
   if (rc != SQLITE_OK && rc != SQLITE_ROW && rc != SQLITE_DONE)
     throw std::runtime_error(std::string(context) + ": " + sqlite3_errmsg(db_));
 }
 
-inline void TransitDatabase::exec(const char *sql) const {
+void TransitDatabase::exec(const char *sql) const {
   char *errmsg = nullptr;
   int rc = sqlite3_exec(db_, sql, nullptr, nullptr, &errmsg);
   if (rc != SQLITE_OK) {
@@ -32,21 +32,20 @@ inline void TransitDatabase::exec(const char *sql) const {
   }
 }
 
-inline void TransitDatabase::clear_data() {
+void TransitDatabase::clear_data() {
   exec("DELETE FROM Stops;");
   exec("DELETE FROM Services;");
   exec("DELETE FROM Groups;");
   exec("DELETE FROM ServiceDetails;");
 }
 
-inline TransitDatabase::Stmt
-TransitDatabase::prepare(const std::string &sql) const {
+TransitDatabase::Stmt TransitDatabase::prepare(const std::string &sql) const {
   Stmt s;
   check(sqlite3_prepare_v2(db_, sql.c_str(), -1, &s.ptr, nullptr), "prepare");
   return s;
 }
 
-inline void TransitDatabase::init_schema() {
+void TransitDatabase::init_schema() {
   exec(R"(
         CREATE TABLE IF NOT EXISTS Stops (
             stop_id        INTEGER PRIMARY KEY,
@@ -77,13 +76,13 @@ inline void TransitDatabase::init_schema() {
     )");
 }
 
-inline bool TransitDatabase::is_populated() const {
+bool TransitDatabase::is_populated() const {
   auto s = prepare("SELECT COUNT(*) FROM Stops;");
   sqlite3_step(s.ptr);
   return sqlite3_column_int(s.ptr, 0) > 0;
 }
 
-inline void TransitDatabase::insert_stops(const std::vector<Stop> &stops) {
+void TransitDatabase::insert_stops(const std::vector<Stop> &stops) {
   exec("BEGIN;");
   auto s = prepare("INSERT OR IGNORE INTO Stops "
                    "(stop_id,type,coordinate_lat,coordinate_lon,code,location)"
@@ -101,8 +100,7 @@ inline void TransitDatabase::insert_stops(const std::vector<Stop> &stops) {
   exec("COMMIT;");
 }
 
-inline void
-TransitDatabase::insert_services(const std::vector<Service> &services) {
+void TransitDatabase::insert_services(const std::vector<Service> &services) {
   exec("BEGIN;");
   auto s = prepare("INSERT OR IGNORE INTO Services "
                    "(service_id,type,group_id,code,name,color,mode)"
@@ -121,7 +119,7 @@ TransitDatabase::insert_services(const std::vector<Service> &services) {
   exec("COMMIT;");
 }
 
-inline void TransitDatabase::insert_groups(const std::vector<Group> &groups) {
+void TransitDatabase::insert_groups(const std::vector<Group> &groups) {
   exec("BEGIN;");
   auto s =
       prepare("INSERT OR IGNORE INTO Groups (group_id,name) VALUES (?,?);");
@@ -134,9 +132,8 @@ inline void TransitDatabase::insert_groups(const std::vector<Group> &groups) {
   exec("COMMIT;");
 }
 
-inline void
-TransitDatabase::upsert_service_detail(int service_id,
-                                       const nlohmann::json &payload) {
+void TransitDatabase::upsert_service_detail(int service_id,
+                                            const nlohmann::json &payload) {
   // Capture wall-clock time as ISO-8601.
   time_t now = time(nullptr);
   char ts[32];
@@ -151,8 +148,8 @@ TransitDatabase::upsert_service_detail(int service_id,
   check(sqlite3_step(s.ptr), "upsert_service_detail");
 }
 
-inline std::vector<Stop> TransitDatabase::search_stops(const std::string &query,
-                                                       int limit) const {
+std::vector<Stop> TransitDatabase::search_stops(const std::string &query,
+                                                int limit) const {
   std::string pat = "%" + query + "%";
   auto s =
       prepare("SELECT stop_id,type,coordinate_lat,coordinate_lon,code,location"
@@ -175,8 +172,8 @@ inline std::vector<Stop> TransitDatabase::search_stops(const std::string &query,
   return result;
 }
 
-inline std::vector<Service>
-TransitDatabase::search_services(const std::string &query, int limit) const {
+std::vector<Service> TransitDatabase::search_services(const std::string &query,
+                                                      int limit) const {
   std::string pat = "%" + query + "%";
   auto s = prepare("SELECT service_id,type,group_id,code,name,color,mode"
                    " FROM Services WHERE name LIKE ? OR code LIKE ? LIMIT ?;");
@@ -199,7 +196,7 @@ TransitDatabase::search_services(const std::string &query, int limit) const {
   return result;
 }
 
-inline std::vector<int> TransitDatabase::all_service_ids() const {
+std::vector<int> TransitDatabase::all_service_ids() const {
   auto s = prepare("SELECT service_id FROM Services;");
   std::vector<int> ids;
   while (sqlite3_step(s.ptr) == SQLITE_ROW)
@@ -207,7 +204,7 @@ inline std::vector<int> TransitDatabase::all_service_ids() const {
   return ids;
 }
 
-inline std::optional<nlohmann::json>
+std::optional<nlohmann::json>
 TransitDatabase::get_service_detail(int service_id) const {
   auto s = prepare("SELECT payload FROM ServiceDetails WHERE service_id=?;");
   sqlite3_bind_int(s.ptr, 1, service_id);

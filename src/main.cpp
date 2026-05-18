@@ -1,3 +1,5 @@
+#include "PublicTransportSystem/mendotran_types.h"
+#include "PublicTransportSystem/public_transport_system.h"
 #include "Renderer/graph_renderer.h"
 #include "RoutingGraph/routing_graph.h"
 #include <cstdint>
@@ -8,6 +10,7 @@ constexpr uint32_t WIDTH = 1920;
 constexpr uint32_t HEIGHT = 1200;
 
 int main(int argc, char *argv[]) {
+  // Application Args -------------------------------------------------------
   if (argc < 2) {
     std::cerr << "Usage: mendotrans-router <filepath> [Options]\n"
               << "Options:\n"
@@ -20,6 +23,7 @@ int main(int argc, char *argv[]) {
 
   RoutingGraph routing_graph;
   RendererData renderer_data;
+  bool fetch_data = false;
 
   for (int i = 2; i < argc; ++i) {
     std::string option = argv[i];
@@ -29,10 +33,33 @@ int main(int argc, char *argv[]) {
     } else if (option == "-highway-colors") {
       renderer_data.highway_colors = true;
       continue;
+    } else if (option == "-fetch-data") {
+      fetch_data = true;
+      continue;
     }
 
     std::cout << "Invalid option: " << argv[i] << '\n';
     return 1;
+  }
+  // -----------------------------------------------------------------------
+
+  // Fetching public transport data ----------------------------------------
+  std::cout << "Fetching public transport data" << '\n';
+
+  if (fetch_data) {
+    mendotran::ApiConfig conf{.base_url = "owa.visionblo.com",
+                              .base_path = "/api/mendoza",
+                              .token = "OQkGfHEQqWRO9zXRQgJb",
+                              .xss_search = "b44c898163f31a8170bbfdf2",
+                              .xss_arrivals = "b44c898163f31a8170bbfdf2",
+                              .xss_service = "b44c898163f31a8170bbfdf2",
+                              .use_https = true};
+
+    mendotran::PublicTransportSystem public_transport_system(
+        "mendotran_data.db", conf);
+
+    public_transport_system.init_static_data();
+    return 0;
   }
 
   std::thread loader_thread([&]() {

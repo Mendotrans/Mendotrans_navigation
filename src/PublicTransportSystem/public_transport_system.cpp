@@ -2,14 +2,13 @@
 
 namespace mendotran {
 
-inline PublicTransportSystem::PublicTransportSystem(const std::string &db_path,
-                                                    const ApiConfig &cfg)
+PublicTransportSystem::PublicTransportSystem(const std::string &db_path,
+                                             const ApiConfig &cfg)
     : m_cfg(cfg), m_db(db_path) {
   m_db.init_schema();
 }
 
-inline std::unique_ptr<httplib::Client>
-PublicTransportSystem::make_client() const {
+std::unique_ptr<httplib::Client> PublicTransportSystem::make_client() const {
   auto client = std::make_unique<httplib::Client>(
       (m_cfg.use_https ? "https://" : "http://") + m_cfg.base_url);
   client->set_connection_timeout(10);
@@ -17,9 +16,8 @@ PublicTransportSystem::make_client() const {
   return client;
 }
 
-inline nlohmann::json
-PublicTransportSystem::post(const std::string &endpoint,
-                            const nlohmann::json &body) const {
+nlohmann::json PublicTransportSystem::post(const std::string &endpoint,
+                                           const nlohmann::json &body) const {
   const std::string path = m_cfg.base_path + "/" + endpoint;
   const std::string body_str = body.dump();
 
@@ -44,7 +42,7 @@ PublicTransportSystem::post(const std::string &endpoint,
   return nlohmann::json::parse(res->body);
 }
 
-inline nlohmann::json PublicTransportSystem::api_fetch_stops() const {
+nlohmann::json PublicTransportSystem::api_fetch_stops() const {
   return post("search", {
                             {"token", m_cfg.token},
                             {"text", ""},
@@ -54,7 +52,7 @@ inline nlohmann::json PublicTransportSystem::api_fetch_stops() const {
                         });
 }
 
-inline nlohmann::json PublicTransportSystem::api_fetch_services_list() const {
+nlohmann::json PublicTransportSystem::api_fetch_services_list() const {
   return post("search", {
                             {"token", m_cfg.token},
                             {"text", ""},
@@ -64,7 +62,7 @@ inline nlohmann::json PublicTransportSystem::api_fetch_services_list() const {
                         });
 }
 
-inline nlohmann::json
+nlohmann::json
 PublicTransportSystem::api_fetch_stop_arrivals(int stop_id) const {
   return post("arrivals", {
                               {"token", m_cfg.token},
@@ -74,7 +72,7 @@ PublicTransportSystem::api_fetch_stop_arrivals(int stop_id) const {
                           });
 }
 
-inline nlohmann::json
+nlohmann::json
 PublicTransportSystem::api_fetch_service_detail(int service_id) const {
   return post("service", {
                              {"token", m_cfg.token},
@@ -85,7 +83,7 @@ PublicTransportSystem::api_fetch_service_detail(int service_id) const {
                          });
 }
 
-inline std::vector<Stop>
+std::vector<Stop>
 PublicTransportSystem::parse_stops(const nlohmann::json &raw) {
   std::vector<Stop> stops;
   for (const auto &s : raw.at("search")) {
@@ -101,7 +99,7 @@ PublicTransportSystem::parse_stops(const nlohmann::json &raw) {
   return stops;
 }
 
-inline std::vector<Service>
+std::vector<Service>
 PublicTransportSystem::parse_services(const nlohmann::json &raw) {
   std::vector<Service> services;
   for (const auto &s : raw.at("search")) {
@@ -118,7 +116,7 @@ PublicTransportSystem::parse_services(const nlohmann::json &raw) {
   return services;
 }
 
-inline std::vector<Group>
+std::vector<Group>
 PublicTransportSystem::parse_groups(const nlohmann::json &raw) {
   std::vector<Group> groups;
   for (const auto &[gid, meta] : raw.at("groups").items())
@@ -126,7 +124,7 @@ PublicTransportSystem::parse_groups(const nlohmann::json &raw) {
   return groups;
 }
 
-inline void PublicTransportSystem::init_static_data() {
+void PublicTransportSystem::init_static_data() {
   if (m_db.is_populated())
     throw std::runtime_error(
         "DB already populated. Use force_reinit() to overwrite.");
@@ -139,32 +137,32 @@ inline void PublicTransportSystem::init_static_data() {
   m_db.insert_groups(parse_groups(services_raw));
 }
 
-inline void PublicTransportSystem::force_reinit() {
+void PublicTransportSystem::force_reinit() {
   m_db.clear_data();
   init_static_data();
 }
 
-inline std::vector<Stop>
-PublicTransportSystem::search_stops(const std::string &query, int limit) const {
+std::vector<Stop> PublicTransportSystem::search_stops(const std::string &query,
+                                                      int limit) const {
   return m_db.search_stops(query, limit);
 }
 
-inline std::vector<Service>
+std::vector<Service>
 PublicTransportSystem::search_services(const std::string &query,
                                        int limit) const {
   return m_db.search_services(query, limit);
 }
 
-inline std::vector<int> PublicTransportSystem::all_service_ids() const {
+std::vector<int> PublicTransportSystem::all_service_ids() const {
   return m_db.all_service_ids();
 }
 
-inline nlohmann::json PublicTransportSystem::fetch_arrivals(int stop_id) const {
+nlohmann::json PublicTransportSystem::fetch_arrivals(int stop_id) const {
   return api_fetch_stop_arrivals(stop_id);
 }
 
-inline nlohmann::json
-PublicTransportSystem::fetch_service_detail(int service_id, bool use_cache) {
+nlohmann::json PublicTransportSystem::fetch_service_detail(int service_id,
+                                                           bool use_cache) {
   if (use_cache) {
     auto cached = m_db.get_service_detail(service_id);
     if (cached)
@@ -175,7 +173,7 @@ PublicTransportSystem::fetch_service_detail(int service_id, bool use_cache) {
   return data;
 }
 
-inline void PublicTransportSystem::fetch_all_service_details(
+void PublicTransportSystem::fetch_all_service_details(
     std::chrono::milliseconds delay, bool force) {
   for (int sid : m_db.all_service_ids()) {
     if (!force && m_db.get_service_detail(sid))
