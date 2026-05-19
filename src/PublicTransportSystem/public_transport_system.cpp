@@ -43,6 +43,7 @@ nlohmann::json PublicTransportSystem::post(const std::string &endpoint,
 }
 
 nlohmann::json PublicTransportSystem::api_fetch_stops() const {
+  std::cout << "Fetching stops data" << '\n';
   return post("search", {
                             {"token", m_cfg.token},
                             {"text", ""},
@@ -53,6 +54,7 @@ nlohmann::json PublicTransportSystem::api_fetch_stops() const {
 }
 
 nlohmann::json PublicTransportSystem::api_fetch_services_list() const {
+  std::cout << "Fetching service_list data" << '\n';
   return post("search", {
                             {"token", m_cfg.token},
                             {"text", ""},
@@ -64,6 +66,7 @@ nlohmann::json PublicTransportSystem::api_fetch_services_list() const {
 
 nlohmann::json
 PublicTransportSystem::api_fetch_stop_arrivals(int stop_id) const {
+  std::cout << "Fetching arrivals data" << '\n';
   return post("arrivals", {
                               {"token", m_cfg.token},
                               {"stop_id", stop_id},
@@ -74,6 +77,7 @@ PublicTransportSystem::api_fetch_stop_arrivals(int stop_id) const {
 
 nlohmann::json
 PublicTransportSystem::api_fetch_service_detail(int service_id) const {
+  std::cout << "Fetching service_detail data" << '\n';
   return post("service", {
                              {"token", m_cfg.token},
                              {"service_id", service_id},
@@ -87,13 +91,14 @@ std::vector<Stop>
 PublicTransportSystem::parse_stops(const nlohmann::json &raw) {
   std::vector<Stop> stops;
   for (const auto &s : raw.at("search")) {
+    std::cout << "Stop: " << s << '\n';
     stops.push_back({
         s.at("stop_id").get<int>(),
         s.at("type").get<std::string>(),
         s.at("coordinates")[0].get<double>(),
         s.at("coordinates")[1].get<double>(),
         s.value("code", ""),
-        s.value("location", ""),
+        s["location"].is_null() ? "" : s["location"].get<std::string>(),
     });
   }
   return stops;
