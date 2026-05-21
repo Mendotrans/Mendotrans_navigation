@@ -1,4 +1,7 @@
 #include "public_transport_system.h"
+#include "PublicTransportSystem/mendotran_types.h"
+#include "Renderer/graph_renderer.h"
+#include <stdexcept>
 
 namespace mendotran {
 
@@ -6,6 +9,13 @@ PublicTransportSystem::PublicTransportSystem(const std::string &db_path,
                                              const ApiConfig &cfg)
     : m_cfg(cfg), m_db(db_path) {
   m_db.init_schema();
+}
+
+PublicTransportSystem::PublicTransportSystem(const std::string &db_path)
+    : m_db(db_path) {
+  if (!m_db.is_populated()) {
+    throw std::runtime_error("No db found!");
+  }
 }
 
 std::unique_ptr<httplib::Client> PublicTransportSystem::make_client() const {

@@ -1,4 +1,5 @@
 #include "graph_renderer.h"
+#include "PublicTransportSystem/mendotran_types.h"
 #include "raylib.h"
 #include "renderer_data.h"
 #include <cmath>

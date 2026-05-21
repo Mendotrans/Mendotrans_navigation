@@ -14,8 +14,15 @@ int main(int argc, char *argv[]) {
   if (argc < 2) {
     std::cerr << "Usage: mendotrans-router <filepath> [Options]\n"
               << "Options:\n"
+
               << "-render-nodes\t Show OSM nodes\n"
-              << "-highway-colors\t Use colors for highway types\n";
+
+              << "-highway-colors\t Use colors for highway types\n"
+
+              << "-fetch-data\t Creates and populates public transport db, "
+                 "errors when it finds one\n"
+
+              << "-render-stops\t Renders stops, errors when no db" << '\n';
     return 1;
   }
   std::string filename = argv[1];
@@ -36,6 +43,9 @@ int main(int argc, char *argv[]) {
     } else if (option == "-fetch-data") {
       fetch_data = true;
       continue;
+    } else if (option == "-render-stops") {
+      renderer_data.render_stops = true;
+      continue;
     }
 
     std::cout << "Invalid option: " << argv[i] << '\n';
@@ -44,9 +54,9 @@ int main(int argc, char *argv[]) {
   // -----------------------------------------------------------------------
 
   // Fetching public transport data ----------------------------------------
-  std::cout << "Fetching public transport data" << '\n';
 
   if (fetch_data) {
+    std::cout << "Fetching public transport data" << '\n';
     mendotran::ApiConfig conf{.base_url = "owa.visionblo.com",
                               .base_path = "/api/mendoza",
                               .token = "OQkGfHEQqWRO9zXRQgJb",

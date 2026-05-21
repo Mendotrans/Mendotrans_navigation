@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PublicTransportSystem/mendotran_types.h"
 #include "RoutingGraph/street_edge.h"
 #include "raylib.h"
 #include <atomic>
@@ -28,9 +29,11 @@ public:
 
   std::vector<Circle> points;
   std::vector<Edge> edges;
+  std::vector<mendotran::Stop> stops;
   std::mutex data_mtx;
 
   std::atomic<bool> loading_done{false};
   bool render_nodes = false;
   bool highway_colors = false;
+  bool render_stops = false;
 };

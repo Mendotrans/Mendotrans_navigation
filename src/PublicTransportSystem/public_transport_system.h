@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Renderer/renderer_data.h"
 #include "mendotran_types.h"
 #include "transit_db.h"
 
@@ -23,6 +24,10 @@ public:
   // cfg      — all API coordinates and credentials.
   explicit PublicTransportSystem(const std::string &db_path,
                                  const ApiConfig &cfg);
+
+  // db_path  — filesystem path for the SQLite file.
+  // This will not fetch data, only reading the existig db
+  explicit PublicTransportSystem(const std::string &db_path);
 
   // Downloads stops, services and groups then populates the DB.
   // Throws if the DB is already populated; call force_reinit() to override.
@@ -82,5 +87,8 @@ private:
   static std::vector<Service> parse_services(const nlohmann::json &raw);
   static std::vector<Group> parse_groups(const nlohmann::json &raw);
 };
+
+void LoadPublicTransportData(std::string db_filepath,
+                             RendererData *renderer_data);
 
 } // namespace mendotran
