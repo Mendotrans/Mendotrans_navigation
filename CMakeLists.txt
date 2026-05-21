@@ -62,6 +62,10 @@ find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 
+# SQLITE
+find_package(SQLite3 REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE SQLite3::SQLite3)
+
 # =========================================================
 # ================== JSON CONFIG ==========================
 # =========================================================

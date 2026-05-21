@@ -5,6 +5,11 @@
 namespace mendotran {
 
 struct Stop {
+  Stop() {}
+  Stop(int stop_id, std::string type, double lat, double lon, std::string code,
+       std::string location)
+      : stop_id(stop_id), type(type), lat(lat), lon(lon), code(code),
+        location(location.empty() ? "NULL" : location) {}
   int stop_id;
   std::string type;
   double lat;
