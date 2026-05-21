@@ -15,9 +15,8 @@ RoutingGraph::get_edges() const {
 }
 
 void RoutingGraph::add_vertex(osmium::object_id_type osm_id, StreetNode node) {
-  graaf::vertex_id_t generated_graaf_id = m_navigationGraph.add_vertex(node);
-
-  m_osm_to_graaf_id[osm_id] = generated_graaf_id;
+  graaf::vertex_id_t id = m_navigationGraph.add_vertex(node);
+  m_osm_to_graaf_id[osm_id] = id;
 }
 
 void RoutingGraph::add_edge(osmium::object_id_type lhs_osm,
@@ -25,7 +24,6 @@ void RoutingGraph::add_edge(osmium::object_id_type lhs_osm,
                             HighwayType type) {
   auto it_lhs = m_osm_to_graaf_id.find(lhs_osm);
   auto it_rhs = m_osm_to_graaf_id.find(rhs_osm);
-
   if (it_lhs != m_osm_to_graaf_id.end() && it_rhs != m_osm_to_graaf_id.end()) {
     m_navigationGraph.add_edge(it_lhs->second, it_rhs->second,
                                StreetEdge(weight, type));
@@ -38,30 +36,22 @@ void LoadOSMData(std::string filename, RoutingGraph *graph,
                                  GraphBuilder(graph));
   reader.apply_reader();
 
-  auto vertices = graph->get_vertex_map();
+  const auto &vertices = graph->get_vertex_map();
   if (vertices.empty())
     return;
 
-  double ref_lat = vertices.begin()->second.Coords.lat();
-  double ref_lon = vertices.begin()->second.Coords.lon();
-
+  // Nodes
   if (renderer_data->render_nodes) {
-    for (const auto &a : vertices) {
-      Vector2 pos = latLonToWorld(a.second.Coords.lat(), a.second.Coords.lon(),
-                                  ref_lat, ref_lon);
-      renderer_data->add_point(pos.x, pos.y);
+    for (const auto &[id, node] : vertices) {
+      renderer_data->add_point(node.Coords.lat(), node.Coords.lon());
     }
   }
 
+  // Edges — pass raw coords; renderer projects them
   for (const auto &[edge_id, edge] : graph->get_edges()) {
-    const auto &nodeA = graph->get_vertex_map().at(edge_id.first);
-    const auto &nodeB = graph->get_vertex_map().at(edge_id.second);
-
-    Vector2 posA =
-        latLonToWorld(nodeA.Coords.lat(), nodeA.Coords.lon(), ref_lat, ref_lon);
-    Vector2 posB =
-        latLonToWorld(nodeB.Coords.lat(), nodeB.Coords.lon(), ref_lat, ref_lon);
-
-    renderer_data->add_edge(posA.x, posA.y, posB.x, posB.y, edge.type);
+    const auto &nodeA = vertices.at(edge_id.first);
+    const auto &nodeB = vertices.at(edge_id.second);
+    renderer_data->add_edge(nodeA.Coords.lat(), nodeA.Coords.lon(),
+                            nodeB.Coords.lat(), nodeB.Coords.lon(), edge.type);
   }
 }
