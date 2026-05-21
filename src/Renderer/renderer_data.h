@@ -1,5 +1,4 @@
 #pragma once
-#include "PublicTransportSystem/mendotran_types.h"
 #include "RoutingGraph/street_edge.h"
 #include "raylib.h"
 #include <atomic>
@@ -20,6 +19,8 @@ struct Edge {
 
 // Raw geographic primitives — no projection applied yet
 struct GeoPoint {
+  GeoPoint(double lat_a, double lon_a, Color color_a, float radius_a)
+      : lat(lat_a), lon(lon_a), color(color_a), radius(radius_a) {}
   double lat, lon;
   Color color;
   float radius;
@@ -47,7 +48,7 @@ public:
 
   std::vector<GeoPoint> points;
   std::vector<GeoEdge> edges;
-  std::vector<mendotran::Stop> stops;
+  std::vector<GeoPoint> stops;
   std::mutex data_mtx;
   std::atomic<bool> loading_done{false};
   bool render_nodes = false;

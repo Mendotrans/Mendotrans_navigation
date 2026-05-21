@@ -162,6 +162,10 @@ std::vector<Stop> PublicTransportSystem::search_stops(const std::string &query,
   return m_db.search_stops(query, limit);
 }
 
+std::vector<Stop> PublicTransportSystem::get_all_stops() const {
+  return m_db.get_all_stops();
+}
+
 std::vector<Service>
 PublicTransportSystem::search_services(const std::string &query,
                                        int limit) const {

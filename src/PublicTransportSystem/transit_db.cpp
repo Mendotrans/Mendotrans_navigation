@@ -172,6 +172,25 @@ std::vector<Stop> TransitDatabase::search_stops(const std::string &query,
   return result;
 }
 
+std::vector<Stop> TransitDatabase::get_all_stops() const {
+  auto s =
+      prepare("SELECT stop_id,type,coordinate_lat,coordinate_lon,code,location"
+              " FROM Stops");
+
+  std::vector<Stop> result;
+  while (sqlite3_step(s.ptr) == SQLITE_ROW) {
+    Stop st;
+    st.stop_id = sqlite3_column_int(s.ptr, 0);
+    st.type = reinterpret_cast<const char *>(sqlite3_column_text(s.ptr, 1));
+    st.lat = sqlite3_column_double(s.ptr, 2);
+    st.lon = sqlite3_column_double(s.ptr, 3);
+    st.code = reinterpret_cast<const char *>(sqlite3_column_text(s.ptr, 4));
+    st.location = reinterpret_cast<const char *>(sqlite3_column_text(s.ptr, 5));
+    result.push_back(std::move(st));
+  }
+  return result;
+}
+
 std::vector<Service> TransitDatabase::search_services(const std::string &query,
                                                       int limit) const {
   std::string pat = "%" + query + "%";

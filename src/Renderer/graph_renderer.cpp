@@ -2,7 +2,9 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "renderer_data.h"
+#include <cassert>
 #include <cmath>
+#include <iostream>
 
 constexpr int MOVING_SPEED = 5;
 
@@ -80,11 +82,29 @@ void GraphRenderer::update() {
       }
     }
 
-    for (const GeoPoint &p : mp_renderer_data->points) {
-      Vector2 pos = project(p.lat, p.lon);
-      if (CheckCollisionPointRec(pos, world_view)) {
-        if (p.radius * m_camera.zoom > 0.5f) {
-          DrawCircle(pos.x, pos.y, p.radius, p.color);
+    if (mp_renderer_data->render_nodes) {
+      for (const GeoPoint &p : mp_renderer_data->points) {
+        Vector2 pos = project(p.lat, p.lon);
+        if (CheckCollisionPointRec(pos, world_view)) {
+          if (p.radius * m_camera.zoom > 0.5f) {
+            // std::cout << "Rendering node: " << pos.x << ' ' << pos.y << '\n';
+            DrawCircle(pos.x, pos.y, p.radius, p.color);
+          }
+        }
+      }
+    }
+
+    if (mp_renderer_data->render_stops) {
+      for (const GeoPoint &p : mp_renderer_data->stops) {
+        Vector2 pos = project(p.lat, p.lon);
+        std::cout << "Looping stop: " << pos.x << ' ' << pos.y << ' '
+                  << p.radius << '\n';
+        if (CheckCollisionPointRec(pos, world_view)) {
+          if (p.radius * m_camera.zoom > 0.5f) {
+            std::cout << "Drawing stop: " << pos.x << ' ' << pos.y << ' '
+                      << p.radius << '\n';
+            DrawCircle(pos.x, pos.y, p.radius, p.color);
+          }
         }
       }
     }

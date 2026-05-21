@@ -1,6 +1,7 @@
 #include "PublicTransportSystem/mendotran_types.h"
 #include "PublicTransportSystem/public_transport_system.h"
 #include "Renderer/graph_renderer.h"
+#include "Renderer/renderer_data.h"
 #include "RoutingGraph/routing_graph.h"
 #include <cstdint>
 #include <iostream>
@@ -74,6 +75,16 @@ int main(int argc, char *argv[]) {
 
   std::thread loader_thread([&]() {
     LoadOSMData(filename, &routing_graph, &renderer_data);
+
+    if (renderer_data.render_stops) {
+      mendotran::PublicTransportSystem public_transport_system(
+          "mendotran_data.db");
+      std::lock_guard<std::mutex> lock(renderer_data.data_mtx); // ADD THIS
+      for (const mendotran::Stop &stop :
+           public_transport_system.get_all_stops()) {
+        renderer_data.stops.push_back(GeoPoint(stop.lat, stop.lon, GREEN, 100));
+      }
+    }
     renderer_data.loading_done = true;
   });
   loader_thread.detach();

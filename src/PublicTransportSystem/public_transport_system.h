@@ -40,6 +40,9 @@ public:
 
   std::vector<Stop> search_stops(const std::string &query,
                                  int limit = 20) const;
+
+  std::vector<Stop> get_all_stops() const;
+
   std::vector<Service> search_services(const std::string &query,
                                        int limit = 30) const;
   std::vector<int> all_service_ids() const;
