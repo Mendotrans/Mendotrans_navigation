@@ -105,8 +105,8 @@ PublicTransportSystem::parse_stops(const nlohmann::json &raw) {
     stops.push_back({
         s.at("stop_id").get<int>(),
         s.at("type").get<std::string>(),
-        s.at("coordinates")[0].get<double>(),
         s.at("coordinates")[1].get<double>(),
+        s.at("coordinates")[0].get<double>(),
         s.value("code", ""),
         s["location"].is_null() ? "" : s["location"].get<std::string>(),
     });

@@ -58,13 +58,15 @@ int main(int argc, char *argv[]) {
 
   if (fetch_data) {
     std::cout << "Fetching public transport data" << '\n';
-    mendotran::ApiConfig conf{.base_url = "owa.visionblo.com",
-                              .base_path = "/api/mendoza",
-                              .token = "OQkGfHEQqWRO9zXRQgJb",
-                              .xss_search = "b44c898163f31a8170bbfdf2",
-                              .xss_arrivals = "b44c898163f31a8170bbfdf2",
-                              .xss_service = "b44c898163f31a8170bbfdf2",
-                              .use_https = true};
+    mendotran::ApiConfig conf{
+        .base_url = "owa.visionblo.com",
+        .base_path = "/api/mendoza",
+        .token = "OQkGfHEQqWRO9zXRQgJb",
+        .xss_search = "bdb1bd4e3b2d187bcd01a52c",
+        .xss_arrivals = "bdb1bd4e3b2d187bcd01a52c",
+        .xss_service = "bdb1bd4e3b2d187bcd01a52c",
+        .use_https = true,
+    };
 
     mendotran::PublicTransportSystem public_transport_system(
         "mendotran_data.db", conf);
@@ -79,22 +81,26 @@ int main(int argc, char *argv[]) {
     if (renderer_data.render_stops) {
       mendotran::PublicTransportSystem public_transport_system(
           "mendotran_data.db");
-      std::lock_guard<std::mutex> lock(renderer_data.data_mtx); // ADD THIS
+
+      std::lock_guard<std::mutex> lock(renderer_data.data_mtx);
+
       for (const mendotran::Stop &stop :
            public_transport_system.get_all_stops()) {
-        renderer_data.stops.push_back(GeoPoint(stop.lat, stop.lon, GREEN, 100));
+        renderer_data.stops.push_back(GeoPoint(stop.lat, stop.lon, GREEN, 5));
       }
     }
     renderer_data.loading_done = true;
   });
   loader_thread.detach();
 
-  GraphRendererArgs renderer_args = {.width = WIDTH,
-                                     .height = HEIGHT,
-                                     .title = "Graph Renderer",
-                                     .default_view_x = 0,
-                                     .default_view_y = 0,
-                                     .target_fps = 60};
+  GraphRendererArgs renderer_args = {
+      .width = WIDTH,
+      .height = HEIGHT,
+      .title = "Graph Renderer",
+      .default_view_x = 0,
+      .default_view_y = 0,
+      .target_fps = 60,
+  };
   GraphRenderer graph_renderer;
 
   graph_renderer.init(&renderer_args);
