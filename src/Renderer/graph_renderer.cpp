@@ -74,8 +74,9 @@ void GraphRenderer::update() {
     for (const GeoEdge &e : mp_renderer_data->edges) {
       Vector2 a = project(e.lat1, e.lon1);
       Vector2 b = project(e.lat2, e.lon2);
-      if (CheckCollisionPointRec(a, world_view) ||
-          CheckCollisionPointRec(b, world_view)) {
+      if ((CheckCollisionPointRec(a, world_view) ||
+           CheckCollisionPointRec(b, world_view)) &&
+          pow(e.thickness, 2) * m_camera.zoom + 0.25 >= 1) {
         Color c =
             mp_renderer_data->highway_colors ? highway_color(e.type) : GRAY;
         DrawLineEx(a, b, e.thickness, c);
