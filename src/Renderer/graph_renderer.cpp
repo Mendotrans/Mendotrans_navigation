@@ -1,16 +1,44 @@
 #include "graph_renderer.h"
 #include "raylib.h"
+#include "raymath.h"
 #include "renderer_data.h"
+#include <cassert>
 #include <cmath>
+#include <iostream>
 
 constexpr int MOVING_SPEED = 5;
 
-static Rectangle zoom_curl(Camera2D &camera) {
-  float width = GetScreenWidth() / camera.zoom;
-  float height = GetScreenHeight() / camera.zoom;
+static Color highway_color(HighwayType type) {
+  switch (type) {
+  case HighwayType::motorway:
+  case HighwayType::motorway_link:
+    return RED;
+  case HighwayType::trunk:
+  case HighwayType::trunk_link:
+    return ORANGE;
+  case HighwayType::primary:
+  case HighwayType::primary_link:
+    return GOLD;
+  case HighwayType::secondary:
+  case HighwayType::secondary_link:
+    return YELLOW;
+  case HighwayType::tertiary:
+  case HighwayType::tertiary_link:
+    return BEIGE;
+  case HighwayType::residential:
+  case HighwayType::residential_link:
+    return BROWN;
+  case HighwayType::unclassified:
+  default:
+    return GRAY;
+  }
+}
 
+static Rectangle zoom_rect(Camera2D &camera) {
+  float w = GetScreenWidth() / camera.zoom;
+  float h = GetScreenHeight() / camera.zoom;
   return {camera.target.x - (camera.offset.x / camera.zoom),
-          camera.target.y - (camera.offset.y / camera.zoom), width, height};
+          camera.target.y - (camera.offset.y / camera.zoom), w, h};
 }
 
 GraphRenderer::GraphRenderer() {}
@@ -19,13 +47,18 @@ GraphRenderer::~GraphRenderer() {}
 void GraphRenderer::init(GraphRendererArgs *args) {
   InitWindow(args->width, args->height, args->title);
   SetTargetFPS(args->target_fps);
-
   m_viewing_point = {args->default_view_x, args->default_view_y};
-
   m_camera.target = {args->default_view_x, args->default_view_y};
   m_camera.offset = {args->width / 2.0f, args->height / 2.0f};
   m_camera.zoom = 1.0f;
   m_camera.rotation = 0.0f;
+}
+
+Vector2 GraphRenderer::project(double lat, double lon) const {
+  constexpr double SCALE = 100000.0;
+  float x = static_cast<float>((lon - mp_renderer_data->ref_lon) * SCALE);
+  float y = static_cast<float>(-(lat - mp_renderer_data->ref_lat) * SCALE);
+  return {x, y};
 }
 
 void GraphRenderer::update() {
@@ -34,21 +67,40 @@ void GraphRenderer::update() {
   ClearBackground(Color(0, 0, 0, 1));
   BeginMode2D(m_camera);
 
-  Rectangle world_view = zoom_curl(m_camera);
-
+  Rectangle world_view = zoom_rect(m_camera);
   {
     std::lock_guard<std::mutex> lock(mp_renderer_data->data_mtx);
-    for (const Edge &e : mp_renderer_data->edges) {
-      if (CheckCollisionPointRec(e.start, world_view) ||
-          CheckCollisionPointRec(e.end, world_view)) {
-        DrawLineEx(e.start, e.end, e.thickness, e.color);
+
+    for (const GeoEdge &e : mp_renderer_data->edges) {
+      Vector2 a = project(e.lat1, e.lon1);
+      Vector2 b = project(e.lat2, e.lon2);
+      if ((CheckCollisionPointRec(a, world_view) ||
+           CheckCollisionPointRec(b, world_view)) &&
+          pow(e.thickness, 2) * m_camera.zoom + 0.25 >= 1) {
+        Color c =
+            mp_renderer_data->highway_colors ? highway_color(e.type) : GRAY;
+        DrawLineEx(a, b, e.thickness, c);
       }
     }
 
-    for (const Circle &a : mp_renderer_data->points) {
-      if (CheckCollisionPointRec(a.center, world_view)) {
-        if (a.radius * m_camera.zoom > 0.5f) {
-          DrawCircle(a.center.x, a.center.y, a.radius, a.color);
+    if (mp_renderer_data->render_nodes) {
+      for (const GeoPoint &p : mp_renderer_data->points) {
+        Vector2 pos = project(p.lat, p.lon);
+        if (CheckCollisionPointRec(pos, world_view)) {
+          if (p.radius * m_camera.zoom > 0.5f) {
+            DrawCircle(pos.x, pos.y, p.radius, p.color);
+          }
+        }
+      }
+    }
+
+    if (mp_renderer_data->render_stops) {
+      for (const GeoPoint &p : mp_renderer_data->stops) {
+        Vector2 pos = project(p.lat, p.lon);
+        if (CheckCollisionPointRec(pos, world_view)) {
+          if (p.radius * m_camera.zoom > 0.5f) {
+            DrawCircle(pos.x, pos.y, p.radius, p.color);
+          }
         }
       }
     }
@@ -56,7 +108,6 @@ void GraphRenderer::update() {
 
   EndMode2D();
   DrawFPS(10, 10);
-
   if (!mp_renderer_data->loading_done) {
     constexpr const char *label = "Loading OSM Data...";
     DrawText(label, GetScreenWidth() - MeasureText(label, 20) - 10, 10, 20,
@@ -82,25 +133,18 @@ void GraphRenderer::manage_movement() {
   float wheel = GetMouseWheelMove();
   if (wheel != 0) {
     Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), m_camera);
-
     float scaleFactor = 1.0f + (0.15f * fabsf(wheel));
     if (wheel > 0)
       m_camera.zoom *= scaleFactor;
     else
       m_camera.zoom /= scaleFactor;
-
-    if (m_camera.zoom > 100.0f)
-      m_camera.zoom = 100.0f;
-    if (m_camera.zoom < 0.01f)
-      m_camera.zoom = 0.01f;
+    m_camera.zoom = Clamp(m_camera.zoom, 0.01f, 100.0f);
 
     Vector2 mouseWorldPosAfter =
         GetScreenToWorld2D(GetMousePosition(), m_camera);
-
     m_viewing_point.x += (mouseWorldPos.x - mouseWorldPosAfter.x);
     m_viewing_point.y += (mouseWorldPos.y - mouseWorldPosAfter.y);
   }
-
   m_camera.target = m_viewing_point;
 }
 
@@ -108,19 +152,8 @@ void GraphRenderer::shutdown() { CloseWindow(); }
 
 void GraphRenderer::begin_render(RendererData *render_data) {
   mp_renderer_data = render_data;
-
   while (!WindowShouldClose()) {
     update();
   }
-
   shutdown();
-}
-
-Vector2 latLonToWorld(double lat, double lon, double ref_lat, double ref_lon) {
-  constexpr double SCALE = 100000.0;
-
-  float x = static_cast<float>((lon - ref_lon) * SCALE);
-  float y = static_cast<float>(-(lat - ref_lat) * SCALE);
-
-  return {x, y};
 }

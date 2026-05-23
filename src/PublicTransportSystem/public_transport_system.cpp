@@ -1,4 +1,7 @@
 #include "public_transport_system.h"
+#include "PublicTransportSystem/mendotran_types.h"
+#include "Renderer/graph_renderer.h"
+#include <stdexcept>
 
 namespace mendotran {
 
@@ -6,6 +9,13 @@ PublicTransportSystem::PublicTransportSystem(const std::string &db_path,
                                              const ApiConfig &cfg)
     : m_cfg(cfg), m_db(db_path) {
   m_db.init_schema();
+}
+
+PublicTransportSystem::PublicTransportSystem(const std::string &db_path)
+    : m_db(db_path) {
+  if (!m_db.is_populated()) {
+    throw std::runtime_error("No db found!");
+  }
 }
 
 std::unique_ptr<httplib::Client> PublicTransportSystem::make_client() const {
@@ -95,8 +105,8 @@ PublicTransportSystem::parse_stops(const nlohmann::json &raw) {
     stops.push_back({
         s.at("stop_id").get<int>(),
         s.at("type").get<std::string>(),
-        s.at("coordinates")[0].get<double>(),
         s.at("coordinates")[1].get<double>(),
+        s.at("coordinates")[0].get<double>(),
         s.value("code", ""),
         s["location"].is_null() ? "" : s["location"].get<std::string>(),
     });
@@ -150,6 +160,10 @@ void PublicTransportSystem::force_reinit() {
 std::vector<Stop> PublicTransportSystem::search_stops(const std::string &query,
                                                       int limit) const {
   return m_db.search_stops(query, limit);
+}
+
+std::vector<Stop> PublicTransportSystem::get_all_stops() const {
+  return m_db.get_all_stops();
 }
 
 std::vector<Service>

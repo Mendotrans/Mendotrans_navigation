@@ -1,49 +1,42 @@
 #include "renderer_data.h"
 #include "raylib.h"
 
-void RendererData::add_point(float x, float y) {
+void RendererData::add_point(double lat, double lon) {
   std::lock_guard<std::mutex> lock(data_mtx);
-  points.push_back({{x, y}, 2.0f, RED});
+  if (!ref_set) {
+    ref_lat = lat;
+    ref_lon = lon;
+    ref_set = true;
+  }
+  points.push_back({lat, lon, RED, 2.0f});
 }
-void RendererData::add_edge(float x1, float y1, float x2, float y2,
-                            HighwayType type) {
 
-  Color color;
+void RendererData::add_edge(double lat1, double lon1, double lat2, double lon2,
+                            HighwayType type) {
   float thickness = 1.0f;
   switch (type) {
   case HighwayType::motorway:
   case HighwayType::motorway_link:
-    color = RED;
     thickness = 3.0f;
     break;
   case HighwayType::trunk:
   case HighwayType::trunk_link:
-    color = ORANGE;
     thickness = 3.0f;
-    break;
-  case HighwayType::primary:
-  case HighwayType::primary_link:
-    color = GOLD;
     break;
   case HighwayType::secondary:
   case HighwayType::secondary_link:
-    color = YELLOW;
     thickness = 2.0f;
     break;
-  case HighwayType::tertiary:
-  case HighwayType::tertiary_link:
-    color = BEIGE;
-    break;
-  case HighwayType::unclassified:
-    color = GRAY;
-    break;
-  case HighwayType::residential:
-  case HighwayType::residential_link:
-    color = BROWN;
-    break;
+  default:
+    thickness = 1.0f;
     break;
   }
+
   std::lock_guard<std::mutex> lock(data_mtx);
-  edges.push_back(
-      {{x1, y1}, {x2, y2}, highway_colors ? color : GRAY, thickness});
+  if (!ref_set) {
+    ref_lat = lat1;
+    ref_lon = lon1;
+    ref_set = true;
+  }
+  edges.push_back({lat1, lon1, lat2, lon2, type, thickness});
 }
