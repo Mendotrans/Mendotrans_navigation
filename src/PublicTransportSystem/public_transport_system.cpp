@@ -28,6 +28,7 @@ std::unique_ptr<httplib::Client> PublicTransportSystem::make_client() const {
 
 nlohmann::json PublicTransportSystem::post(const std::string &endpoint,
                                            const nlohmann::json &body) const {
+  // FIX: m_cfg.base_path is null
   const std::string path = m_cfg.base_path + "/" + endpoint;
   const std::string body_str = body.dump();
 
@@ -42,6 +43,9 @@ nlohmann::json PublicTransportSystem::post(const std::string &endpoint,
 
   auto client = make_client();
   auto res = client->Post(path, headers, body_str, "application/json");
+
+  std::cout << "Making post request:\n\t " << path << "\n\t" << body_str
+            << '\n';
 
   if (!res)
     throw std::runtime_error("HTTP POST failed: " + path);

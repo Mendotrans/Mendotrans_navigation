@@ -62,9 +62,9 @@ int main(int argc, char *argv[]) {
         .base_url = "owa.visionblo.com",
         .base_path = "/api/mendoza",
         .token = "OQkGfHEQqWRO9zXRQgJb",
-        .xss_search = "bdb1bd4e3b2d187bcd01a52c",
-        .xss_arrivals = "bdb1bd4e3b2d187bcd01a52c",
-        .xss_service = "bdb1bd4e3b2d187bcd01a52c",
+        .xss_search = "cacdea08b541276c47572b40",
+        .xss_arrivals = "cacdea08b541276c47572b40",
+        .xss_service = "cacdea08b541276c47572b40",
         .use_https = true,
     };
 
@@ -88,7 +88,12 @@ int main(int argc, char *argv[]) {
            public_transport_system.get_all_stops()) {
         renderer_data.stops.push_back(GeoPoint(stop.lat, stop.lon, GREEN, 5));
       }
+
+      for (const auto &a : public_transport_system.all_service_ids()) {
+        std::cout << public_transport_system.fetch_service_detail(a) << '\n';
+      }
     }
+
     renderer_data.loading_done = true;
   });
   loader_thread.detach();
