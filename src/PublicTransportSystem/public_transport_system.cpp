@@ -144,9 +144,10 @@ PublicTransportSystem::parse_groups(const nlohmann::json &raw) {
 }
 
 void PublicTransportSystem::init_static_data() {
-  if (m_db.is_populated())
-    throw std::runtime_error(
-        "DB already populated. Use force_reinit() to overwrite.");
+  if (m_db.is_populated()) {
+    std::cout << "DB Already populated, skiping!" << '\n';
+    return;
+  }
 
   auto stops_raw = api_fetch_stops();
   auto services_raw = api_fetch_services_list();
@@ -200,15 +201,15 @@ void PublicTransportSystem::fetch_all_service_details(
     std::chrono::milliseconds delay, bool force) {
   for (unsigned long s_index = 0; s_index < m_db.all_service_ids().size();
        ++s_index) {
-    std::cout << "[ " << s_index << " / " << m_db.all_service_ids().size()
-              << " ]\n";
     if (!force && m_db.get_service_detail(m_db.all_service_ids()[s_index])) {
       std::cout << "Service ID: " << m_db.all_service_ids()[s_index]
                 << " already cached!\n";
       continue;
     }
     std::cout << "Service ID: " << m_db.all_service_ids()[s_index]
-              << " fetching!\n";
+              << " fetching! "
+              << "[ " << s_index << " / " << m_db.all_service_ids().size()
+              << " ]\n";
     auto data = api_fetch_service_detail(m_db.all_service_ids()[s_index]);
     std::cout << "Upserting: " << m_db.all_service_ids()[s_index]
               << " data: " << data << '\n';

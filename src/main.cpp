@@ -75,6 +75,9 @@ int main(int argc, char *argv[]) {
         "mendotran_data.db", conf);
 
     public_transport_system.init_static_data();
+
+    public_transport_system.fetch_all_service_details(
+        std::chrono::milliseconds(1));
     return 0;
   }
 
@@ -93,9 +96,6 @@ int main(int argc, char *argv[]) {
           renderer_data.stops.push_back(GeoPoint(stop.lat, stop.lon, GREEN, 5));
         }
       }
-
-      public_transport_system.fetch_all_service_details(
-          std::chrono::milliseconds(1));
     }
 
     renderer_data.loading_done = true;
