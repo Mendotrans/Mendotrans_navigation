@@ -3,7 +3,9 @@
 #include "Renderer/graph_renderer.h"
 #include "Renderer/renderer_data.h"
 #include "RoutingGraph/routing_graph.h"
+#include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 #include <thread>
 
@@ -55,18 +57,19 @@ int main(int argc, char *argv[]) {
   // -----------------------------------------------------------------------
 
   // Fetching public transport data ----------------------------------------
+  //
+  mendotran::ApiConfig conf{
+      .base_url = "owa.visionblo.com",
+      .base_path = "/api/mendoza",
+      .token = "OQkGfHEQqWRO9zXRQgJb",
+      .xss_search = "cacdea08b541276c47572b40",
+      .xss_arrivals = "cacdea08b541276c47572b40",
+      .xss_service = "cacdea08b541276c47572b40",
+      .use_https = true,
+  };
 
   if (fetch_data) {
     std::cout << "Fetching public transport data" << '\n';
-    mendotran::ApiConfig conf{
-        .base_url = "owa.visionblo.com",
-        .base_path = "/api/mendoza",
-        .token = "OQkGfHEQqWRO9zXRQgJb",
-        .xss_search = "bdb1bd4e3b2d187bcd01a52c",
-        .xss_arrivals = "bdb1bd4e3b2d187bcd01a52c",
-        .xss_service = "bdb1bd4e3b2d187bcd01a52c",
-        .use_https = true,
-    };
 
     mendotran::PublicTransportSystem public_transport_system(
         "mendotran_data.db", conf);
@@ -80,15 +83,21 @@ int main(int argc, char *argv[]) {
 
     if (renderer_data.render_stops) {
       mendotran::PublicTransportSystem public_transport_system(
-          "mendotran_data.db");
+          "mendotran_data.db", conf);
 
-      std::lock_guard<std::mutex> lock(renderer_data.data_mtx);
+      {
+        std::lock_guard<std::mutex> lock(renderer_data.data_mtx);
 
-      for (const mendotran::Stop &stop :
-           public_transport_system.get_all_stops()) {
-        renderer_data.stops.push_back(GeoPoint(stop.lat, stop.lon, GREEN, 5));
+        for (const mendotran::Stop &stop :
+             public_transport_system.get_all_stops()) {
+          renderer_data.stops.push_back(GeoPoint(stop.lat, stop.lon, GREEN, 5));
+        }
       }
+
+      public_transport_system.fetch_all_service_details(
+          std::chrono::milliseconds(1));
     }
+
     renderer_data.loading_done = true;
   });
   loader_thread.detach();

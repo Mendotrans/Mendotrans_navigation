@@ -28,6 +28,7 @@ std::unique_ptr<httplib::Client> PublicTransportSystem::make_client() const {
 
 nlohmann::json PublicTransportSystem::post(const std::string &endpoint,
                                            const nlohmann::json &body) const {
+  assert(!m_cfg.base_url.empty() && "m_cfg unintialized!");
   const std::string path = m_cfg.base_path + "/" + endpoint;
   const std::string body_str = body.dump();
 
@@ -42,6 +43,9 @@ nlohmann::json PublicTransportSystem::post(const std::string &endpoint,
 
   auto client = make_client();
   auto res = client->Post(path, headers, body_str, "application/json");
+
+  std::cout << "Making post request:\n\t " << path << "\n\t" << body_str
+            << '\n';
 
   if (!res)
     throw std::runtime_error("HTTP POST failed: " + path);
@@ -91,7 +95,7 @@ PublicTransportSystem::api_fetch_service_detail(int service_id) const {
   return post("service", {
                              {"token", m_cfg.token},
                              {"service_id", service_id},
-                             {"encode_polyline", true},
+                             {"encode_polyline", false},
                              {"vehicles", true},
                              {"xss", m_cfg.xss_service},
                          });
@@ -194,11 +198,21 @@ nlohmann::json PublicTransportSystem::fetch_service_detail(int service_id,
 
 void PublicTransportSystem::fetch_all_service_details(
     std::chrono::milliseconds delay, bool force) {
-  for (int sid : m_db.all_service_ids()) {
-    if (!force && m_db.get_service_detail(sid))
+  for (unsigned long s_index = 0; s_index < m_db.all_service_ids().size();
+       ++s_index) {
+    std::cout << "[ " << s_index << " / " << m_db.all_service_ids().size()
+              << " ]\n";
+    if (!force && m_db.get_service_detail(m_db.all_service_ids()[s_index])) {
+      std::cout << "Service ID: " << m_db.all_service_ids()[s_index]
+                << " already cached!\n";
       continue;
-    auto data = api_fetch_service_detail(sid);
-    m_db.upsert_service_detail(sid, data);
+    }
+    std::cout << "Service ID: " << m_db.all_service_ids()[s_index]
+              << " fetching!\n";
+    auto data = api_fetch_service_detail(m_db.all_service_ids()[s_index]);
+    std::cout << "Upserting: " << m_db.all_service_ids()[s_index]
+              << " data: " << data << '\n';
+    m_db.upsert_service_detail(m_db.all_service_ids()[s_index], data);
     std::this_thread::sleep_for(delay);
   }
 }

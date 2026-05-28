@@ -27,7 +27,7 @@ public:
 
   // db_path  — filesystem path for the SQLite file.
   // This will not fetch data, only reading the existig db
-  explicit PublicTransportSystem(const std::string &db_path);
+  [[deprecated]] explicit PublicTransportSystem(const std::string &db_path);
 
   // Downloads stops, services and groups then populates the DB.
   // Throws if the DB is already populated; call force_reinit() to override.
@@ -59,7 +59,7 @@ public:
   // Bulk-fetches all service details with a configurable inter-request delay.
   // Already-cached services are skipped unless force=true.
   void fetch_all_service_details(
-      std::chrono::milliseconds delay = std::chrono::milliseconds(500),
+      std::chrono::milliseconds delay = std::chrono::milliseconds(200),
       bool force = false);
 
   // Direct access to the underlying database.
