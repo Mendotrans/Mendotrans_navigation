@@ -134,6 +134,7 @@ void TransitDatabase::insert_groups(const std::vector<Group> &groups) {
 
 void TransitDatabase::upsert_service_detail(int service_id,
                                             const nlohmann::json &payload) {
+  exec("BEGIN;");
   // Capture wall-clock time as ISO-8601.
   time_t now = time(nullptr);
   char ts[32];
@@ -146,6 +147,7 @@ void TransitDatabase::upsert_service_detail(int service_id,
   sqlite3_bind_text(s.ptr, 2, ts, -1, SQLITE_TRANSIENT);
   sqlite3_bind_text(s.ptr, 3, payload.dump().c_str(), -1, SQLITE_TRANSIENT);
   check(sqlite3_step(s.ptr), "upsert_service_detail");
+  exec("COMMIT;");
 }
 
 std::vector<Stop> TransitDatabase::search_stops(const std::string &query,

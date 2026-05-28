@@ -3,7 +3,9 @@
 #include "Renderer/graph_renderer.h"
 #include "Renderer/renderer_data.h"
 #include "RoutingGraph/routing_graph.h"
+#include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
 #include <thread>
 
@@ -55,18 +57,19 @@ int main(int argc, char *argv[]) {
   // -----------------------------------------------------------------------
 
   // Fetching public transport data ----------------------------------------
+  //
+  mendotran::ApiConfig conf{
+      .base_url = "owa.visionblo.com",
+      .base_path = "/api/mendoza",
+      .token = "OQkGfHEQqWRO9zXRQgJb",
+      .xss_search = "cacdea08b541276c47572b40",
+      .xss_arrivals = "cacdea08b541276c47572b40",
+      .xss_service = "cacdea08b541276c47572b40",
+      .use_https = true,
+  };
 
   if (fetch_data) {
     std::cout << "Fetching public transport data" << '\n';
-    mendotran::ApiConfig conf{
-        .base_url = "owa.visionblo.com",
-        .base_path = "/api/mendoza",
-        .token = "OQkGfHEQqWRO9zXRQgJb",
-        .xss_search = "cacdea08b541276c47572b40",
-        .xss_arrivals = "cacdea08b541276c47572b40",
-        .xss_service = "cacdea08b541276c47572b40",
-        .use_https = true,
-    };
 
     mendotran::PublicTransportSystem public_transport_system(
         "mendotran_data.db", conf);
@@ -80,7 +83,7 @@ int main(int argc, char *argv[]) {
 
     if (renderer_data.render_stops) {
       mendotran::PublicTransportSystem public_transport_system(
-          "mendotran_data.db");
+          "mendotran_data.db", conf);
 
       std::lock_guard<std::mutex> lock(renderer_data.data_mtx);
 
@@ -89,9 +92,8 @@ int main(int argc, char *argv[]) {
         renderer_data.stops.push_back(GeoPoint(stop.lat, stop.lon, GREEN, 5));
       }
 
-      for (const auto &a : public_transport_system.all_service_ids()) {
-        std::cout << public_transport_system.fetch_service_detail(a) << '\n';
-      }
+      public_transport_system.fetch_all_service_details(
+          std::chrono::milliseconds(1));
     }
 
     renderer_data.loading_done = true;
