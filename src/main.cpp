@@ -85,11 +85,13 @@ int main(int argc, char *argv[]) {
       mendotran::PublicTransportSystem public_transport_system(
           "mendotran_data.db", conf);
 
-      std::lock_guard<std::mutex> lock(renderer_data.data_mtx);
+      {
+        std::lock_guard<std::mutex> lock(renderer_data.data_mtx);
 
-      for (const mendotran::Stop &stop :
-           public_transport_system.get_all_stops()) {
-        renderer_data.stops.push_back(GeoPoint(stop.lat, stop.lon, GREEN, 5));
+        for (const mendotran::Stop &stop :
+             public_transport_system.get_all_stops()) {
+          renderer_data.stops.push_back(GeoPoint(stop.lat, stop.lon, GREEN, 5));
+        }
       }
 
       public_transport_system.fetch_all_service_details(
