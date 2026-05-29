@@ -52,6 +52,8 @@ void GraphRenderer::init(GraphRendererArgs *args) {
   m_camera.offset = {args->width / 2.0f, args->height / 2.0f};
   m_camera.zoom = 1.0f;
   m_camera.rotation = 0.0f;
+
+  mp_renderer_args = args;
 }
 
 Vector2 GraphRenderer::project(double lat, double lon) const {
@@ -74,34 +76,46 @@ void GraphRenderer::update() {
     for (const GeoEdge &e : mp_renderer_data->edges) {
       Vector2 a = project(e.lat1, e.lon1);
       Vector2 b = project(e.lat2, e.lon2);
-      if ((CheckCollisionPointRec(a, world_view) ||
-           CheckCollisionPointRec(b, world_view)) &&
-          pow(e.thickness, 2) * m_camera.zoom + 0.25 >= 1) {
-        Color c =
-            mp_renderer_data->highway_colors ? highway_color(e.type) : GRAY;
-        DrawLineEx(a, b, e.thickness, c);
-      }
+      if (!CheckCollisionPointRec(a, world_view) &&
+          !CheckCollisionPointRec(b, world_view))
+        continue;
+
+      if (pow(e.thickness, 2) * m_camera.zoom + 0.25 < 1 &&
+          mp_renderer_args->zoom_fade)
+        continue;
+
+      Color c = mp_renderer_data->highway_colors ? highway_color(e.type) : GRAY;
+
+      DrawLineEx(a, b, e.thickness, c);
     }
 
     if (mp_renderer_data->render_nodes) {
       for (const GeoPoint &p : mp_renderer_data->points) {
+
         Vector2 pos = project(p.lat, p.lon);
-        if (CheckCollisionPointRec(pos, world_view)) {
-          if (p.radius * m_camera.zoom > 0.5f) {
-            DrawCircle(pos.x, pos.y, p.radius, p.color);
-          }
-        }
+
+        if (!CheckCollisionPointRec(pos, world_view))
+          continue;
+
+        if (p.radius * m_camera.zoom < 0.5f && mp_renderer_args->zoom_fade)
+          continue;
+
+        DrawCircle(pos.x, pos.y, p.radius, p.color);
       }
     }
 
     if (mp_renderer_data->render_stops) {
       for (const GeoPoint &p : mp_renderer_data->stops) {
+
         Vector2 pos = project(p.lat, p.lon);
-        if (CheckCollisionPointRec(pos, world_view)) {
-          if (p.radius * m_camera.zoom > 0.5f) {
-            DrawCircle(pos.x, pos.y, p.radius, p.color);
-          }
-        }
+
+        if (!CheckCollisionPointRec(pos, world_view))
+          continue;
+
+        if (p.radius * m_camera.zoom < 0.5f && mp_renderer_args->zoom_fade)
+          continue;
+
+        DrawCircle(pos.x, pos.y, p.radius, p.color);
       }
     }
   }

@@ -5,12 +5,11 @@
 #include "RoutingGraph/routing_graph.h"
 #include <chrono>
 #include <cstdint>
-#include <cstdlib>
 #include <iostream>
 #include <thread>
 
-constexpr uint32_t WIDTH = 1920;
-constexpr uint32_t HEIGHT = 1200;
+constexpr uint32_t WIDTH = 800;
+constexpr uint32_t HEIGHT = 600;
 
 int main(int argc, char *argv[]) {
   // Application Args -------------------------------------------------------
@@ -109,6 +108,7 @@ int main(int argc, char *argv[]) {
       .default_view_x = 0,
       .default_view_y = 0,
       .target_fps = 60,
+      .zoom_fade = true,
   };
   GraphRenderer graph_renderer;
 

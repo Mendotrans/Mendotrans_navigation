@@ -10,6 +10,7 @@ struct GraphRendererArgs {
   const float default_view_x = 0;
   const float default_view_y = 0;
   const int target_fps = 60;
+  const bool zoom_fade = false;
 };
 
 class GraphRenderer {
